@@ -8,7 +8,20 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu6gS0uhSbYLjqGvpGu0j1OP_ogrdg6dU&libraries=places,geometry,visualization" async defer></script>
+<script>
+  // Global flag to track when Google Maps is loaded
+  window.googleMapsLoaded = false;
+  
+  // Callback function for Google Maps API
+  function googleMapsInit() {
+    window.googleMapsLoaded = true;
+    console.log('Google Maps API loaded successfully');
+    
+    // Dispatch custom event so other scripts can know maps is ready
+    window.dispatchEvent(new Event('googleMapsReady'));
+  }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAu6gS0uhSbYLjqGvpGu0j1OP_ogrdg6dU&libraries=places,geometry,visualization&callback=googleMapsInit" async defer></script>
 <style>
 :root {
   --bg: #04080f;
@@ -486,6 +499,117 @@ nav{
   font-family:var(--ui);
 }
 #toast.show{transform:translateY(0);opacity:1}
+
+/* ══ TOOL PREVIEW GRID ══ */
+.tool-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;max-width:640px;margin:32px auto 0}
+.tool-cell{background:var(--bg);padding:22px 10px;text-align:center;cursor:pointer;transition:background .2s;display:flex;flex-direction:column;align-items:center;gap:7px}
+.tool-cell:hover{background:rgba(79,138,255,.07)}
+.tool-cell-ic{font-size:1.6rem}
+.tool-cell-lbl{font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;font-family:var(--ui)}
+
+/* ══ STANDALONE TOOL PAGES ══ */
+.tool-page-wrap{max-width:780px;margin:0 auto;padding:28px 0 60px}
+.tool-back{display:inline-flex;align-items:center;gap:7px;font-size:.8rem;color:var(--muted);cursor:pointer;margin-bottom:20px;font-family:var(--ui);transition:color .2s}
+.tool-back:hover{color:var(--text)}
+.tool-title{font-family:var(--display);font-size:1.7rem;font-weight:400;margin-bottom:5px}
+.tool-sub{font-size:.85rem;color:var(--muted);margin-bottom:28px}
+.tool-card{background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:28px 30px;margin-bottom:20px}
+.tool-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:600px){.tool-form-grid{grid-template-columns:1fr}}
+.tool-label{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block;font-weight:600;font-family:var(--ui)}
+.tool-input{width:100%;padding:11px 15px;background:var(--s2);border:1.5px solid var(--b2);border-radius:10px;color:var(--text);font-family:var(--ui);font-size:.88rem;outline:none;transition:border-color .2s}
+.tool-input:focus{border-color:var(--accent)}
+.tool-result-area{margin-top:20px}
+
+/* Cost Table */
+.cost-table{width:100%;border-collapse:collapse}
+.cost-table tr{border-bottom:1px solid var(--b1)}
+.cost-table td{padding:11px 0;font-size:.85rem}
+.cost-table td:last-child{text-align:right;font-weight:600}
+.cost-total-row td{color:var(--green);font-size:.95rem;padding-top:14px;border-top:2px solid rgba(24,196,154,.3);border-bottom:none}
+
+/* Scheme cards */
+.scheme-card{border-left:3px solid var(--gold);background:var(--s2);border-radius:10px;padding:16px 18px;margin-bottom:12px}
+.scheme-name{font-family:var(--display);font-size:1rem;color:var(--gold);margin-bottom:5px}
+.scheme-meta{font-size:.78rem;color:var(--muted);line-height:1.8}
+.scheme-tag{display:inline-block;background:rgba(217,168,78,.08);border:1px solid rgba(217,168,78,.2);color:var(--gold);border-radius:999px;padding:2px 10px;font-size:.68rem;font-weight:600;font-family:var(--ui);margin-right:6px}
+
+/* Supplier cards */
+.supplier-card{background:var(--s2);border:1px solid var(--b1);border-radius:10px;padding:16px 18px;margin-bottom:12px}
+.supplier-name{font-family:var(--display);font-size:1rem;margin-bottom:4px}
+.supplier-meta{font-size:.78rem;color:var(--muted);margin-bottom:6px}
+.supplier-tip{font-size:.75rem;color:var(--green);margin-top:5px}
+.supply-badge{display:inline-block;background:rgba(24,196,154,.08);border:1px solid rgba(24,196,154,.2);color:var(--green);border-radius:999px;padding:2px 10px;font-size:.68rem;font-weight:600;font-family:var(--ui)}
+
+/* Checklist */
+.checklist-bar-wrap{height:4px;background:var(--s2);border-radius:999px;overflow:hidden;margin-bottom:8px}
+.checklist-bar-fill{height:100%;background:var(--green);border-radius:999px;transition:width .4s}
+.checklist-counter{font-size:.72rem;color:var(--muted);margin-bottom:16px;font-family:var(--ui)}
+.check-item{display:flex;align-items:flex-start;gap:12px;padding:13px 0;border-bottom:1px solid var(--b1);cursor:pointer;transition:opacity .2s}
+.check-item:last-child{border-bottom:none}
+.check-box{width:20px;height:20px;border:2px solid var(--b2);border-radius:5px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.check-item.checked .check-box{background:var(--green);border-color:var(--green)}
+.check-item.checked{opacity:.65}
+.check-task{font-size:.85rem;font-weight:500;margin-bottom:3px}
+.check-detail{font-size:.75rem;color:var(--muted)}
+.check-cat-badge{display:inline-block;padding:1px 8px;border-radius:999px;font-size:.62rem;font-weight:600;letter-spacing:.06em;border:1px solid var(--b2);color:var(--muted);font-family:var(--ui);margin-left:8px}
+
+/* ROI Simulator */
+.roi-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+@media(max-width:540px){.roi-grid{grid-template-columns:1fr}}
+.roi-result-table{width:100%;border-collapse:collapse;margin-top:10px}
+.roi-result-table tr{border-bottom:1px solid var(--b1)}
+.roi-result-table td{padding:10px 4px;font-size:.85rem}
+.roi-result-table td:last-child{text-align:right;font-weight:600}
+.roi-pos{color:var(--green)}
+.roi-neg{color:var(--red)}
+.roi-neutral{color:var(--gold)}
+
+/* Rental Cards */
+.rental-filter-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px}
+.rental-filter-row .tool-input{flex:1;min-width:120px}
+.type-filter-row{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.type-btn{padding:6px 13px;border-radius:999px;border:1.5px solid var(--b2);background:var(--s1);color:var(--muted);font-size:.72rem;font-weight:600;cursor:pointer;font-family:var(--ui);transition:all .2s}
+.type-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(79,138,255,.08)}
+.rental-card{background:var(--s2);border:1px solid var(--b1);border-radius:12px;padding:18px 20px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;transition:border-color .2s}
+.rental-card:hover{border-color:var(--b2)}
+.rental-card.best-match{border-color:rgba(24,196,154,.4);box-shadow:0 0 16px rgba(24,196,154,.08)}
+.rental-card-left{flex:1}
+.rental-name{font-family:var(--display);font-size:1rem;margin-bottom:4px}
+.rental-meta{font-size:.78rem;color:var(--muted);margin-bottom:7px}
+.rental-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
+.rental-tag{padding:2px 9px;border-radius:999px;font-size:.65rem;font-weight:600;background:rgba(79,138,255,.08);border:1px solid rgba(79,138,255,.18);color:var(--accent);font-family:var(--ui)}
+.rental-why{font-size:.76rem;color:var(--green)}
+.best-match-badge{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green);background:rgba(24,196,154,.1);border:1px solid rgba(24,196,154,.25);border-radius:999px;padding:3px 10px;display:inline-block;margin-bottom:6px;font-family:var(--ui)}
+.rental-price{font-family:var(--display);font-size:1.4rem;color:var(--green);text-align:right;white-space:nowrap}
+.rental-price-lbl{font-size:.62rem;color:var(--muted);text-align:right;font-family:var(--ui)}
+.rental-foot{font-size:.72rem;color:var(--muted);font-style:italic;margin-top:10px;padding-top:10px;border-top:1px solid var(--b1)}
+
+/* AI Chat */
+.chat-history{max-height:280px;overflow-y:auto;padding:4px 0;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.chat-history::-webkit-scrollbar{width:3px}
+.chat-history::-webkit-scrollbar-thumb{background:var(--b2)}
+.chat-bubble-ai{background:var(--s2);border:1px solid var(--b1);border-left:3px solid var(--accent);border-radius:0 10px 10px 10px;padding:11px 14px;font-size:.83rem;line-height:1.7;max-width:85%;align-self:flex-start}
+.chat-bubble-user{background:rgba(79,138,255,.1);border:1px solid rgba(79,138,255,.2);border-radius:10px 0 10px 10px;padding:11px 14px;font-size:.83rem;line-height:1.7;max-width:85%;align-self:flex-end;text-align:right}
+.chat-input-row{display:flex;gap:9px}
+.chat-input-row input{flex:1;padding:11px 14px;background:var(--s2);border:1.5px solid var(--b2);border-radius:10px;color:var(--text);font-family:var(--ui);font-size:.85rem;outline:none}
+.chat-input-row input:focus{border-color:var(--accent)}
+.chat-typing{font-size:.75rem;color:var(--muted);padding:5px 4px;font-family:var(--ui)}
+
+/* Loading spinner for tools */
+.tool-spinner{display:flex;align-items:center;gap:10px;padding:16px;color:var(--muted);font-size:.82rem;font-family:var(--ui)}
+.err-card{background:rgba(240,82,82,.06);border:1px solid rgba(240,82,82,.25);border-radius:10px;padding:14px 18px;font-size:.82rem;color:var(--red);margin-top:10px}
+
+/* Results page new sections */
+.new-section{max-width:980px;margin:0 auto 20px;background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:24px 26px}
+.new-section-title{font-family:var(--display);font-size:1.2rem;margin-bottom:5px}
+.new-section-sub{font-size:.8rem;color:var(--muted);margin-bottom:18px}
+.two-col-inner{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:680px){.two-col-inner{grid-template-columns:1fr}}
+.persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.persona-cell{background:var(--s2);border:1px solid var(--b1);border-radius:9px;padding:12px 14px}
+.persona-cell-lbl{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:4px;font-family:var(--ui)}
+.persona-cell-val{font-size:.82rem}
 </style>
 </head>
 <body>
@@ -512,6 +636,16 @@ nav{
         <div class="hs"><div class="hs-n" data-t="200">0</div><div class="hs-l">Business Types</div></div>
         <div class="hs"><div class="hs-n" data-t="35">0</div><div class="hs-l">Govt Schemes</div></div>
         <div class="hs"><div class="hs-n" data-t="80" data-s="%">0</div><div class="hs-l">Accuracy</div></div>
+      </div>
+      <div class="tool-grid">
+        <div class="tool-cell" onclick="go('pg-s1')"><div class="tool-cell-ic">🔍</div><div class="tool-cell-lbl">Gap Analysis</div></div>
+        <div class="tool-cell" onclick="showTool('cost')"><div class="tool-cell-ic">💸</div><div class="tool-cell-lbl">Cost Estimator</div></div>
+        <div class="tool-cell" onclick="showTool('scheme')"><div class="tool-cell-ic">🏦</div><div class="tool-cell-lbl">Govt Schemes</div></div>
+        <div class="tool-cell" onclick="showTool('supplier')"><div class="tool-cell-ic">📦</div><div class="tool-cell-lbl">Suppliers</div></div>
+        <div class="tool-cell" onclick="showTool('checklist')"><div class="tool-cell-ic">✅</div><div class="tool-cell-lbl">Checklist</div></div>
+        <div class="tool-cell" onclick="showTool('roi')"><div class="tool-cell-ic">📈</div><div class="tool-cell-lbl">ROI Simulator</div></div>
+        <div class="tool-cell" onclick="showTool('rental')"><div class="tool-cell-ic">🏪</div><div class="tool-cell-lbl">Rental Finder</div></div>
+        <div class="tool-cell" onclick="go('pg-s1')"><div class="tool-cell-ic">🤖</div><div class="tool-cell-lbl">AI Advisor</div></div>
       </div>
     </div>
   </div>
@@ -769,11 +903,267 @@ nav{
       <div style="text-align:center;padding:8px 0 16px">
         <button class="btn btn-g" onclick="reset()">↺ Start New Analysis</button>
       </div>
+
+      <!-- ════ STARTUP COST + COMPETITORS ════ -->
+      <div class="new-section" id="sec-cost-comp" style="display:none">
+        <div class="two-col-inner">
+          <div>
+            <div class="rc-ey">Startup Cost Estimate</div>
+            <div class="new-section-title" style="font-size:1rem;margin-bottom:12px">Capital Required</div>
+            <div id="cost-table-wrap"></div>
+          </div>
+          <div>
+            <div class="rc-ey">Competitor Landscape</div>
+            <div class="new-section-title" style="font-size:1rem;margin-bottom:12px">Nearby Players</div>
+            <div id="competitors-wrap"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ GOVT SCHEMES ════ -->
+      <div class="new-section" id="sec-schemes-ai" style="display:none">
+        <div class="rc-ey">Matched Government Schemes</div>
+        <div class="new-section-title">Funding Sources for <span id="schemes-sector-label"></span></div>
+        <div class="new-section-sub">Schemes matched to your sector and locality in Bhubaneswar, Odisha.</div>
+        <div id="schemes-ai-wrap"></div>
+      </div>
+
+      <!-- ════ PERSONA + SUPPLIERS ════ -->
+      <div class="new-section" id="sec-persona-supplier" style="display:none">
+        <div class="two-col-inner">
+          <div>
+            <div class="rc-ey">Customer Persona</div>
+            <div class="new-section-title" style="font-size:1rem;margin-bottom:12px">Target Customer Profile</div>
+            <div class="persona-grid" id="persona-grid"></div>
+          </div>
+          <div>
+            <div class="rc-ey">Local Suppliers</div>
+            <div class="new-section-title" style="font-size:1rem;margin-bottom:12px">Sourcing Contacts</div>
+            <div id="suppliers-wrap"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════ RENTAL SPACES ════ -->
+      <div class="new-section" id="sec-rentals" style="display:none">
+        <div class="rc-ey">Rental Space Finder</div>
+        <div class="new-section-title">🏪 Nearby Rental Spaces</div>
+        <div class="new-section-sub" id="rental-sub-text">Based on your gap analysis, here are commercial spaces matching your sector.</div>
+        <div class="type-filter-row" id="rental-type-filters">
+          <button class="type-btn active" onclick="filterRentals('all',this)">All Spaces 🏢</button>
+          <button class="type-btn" onclick="filterRentals('shop',this)">Shop 🏪</button>
+          <button class="type-btn" onclick="filterRentals('food',this)">Food Unit 🍽️</button>
+          <button class="type-btn" onclick="filterRentals('office',this)">Office 💼</button>
+          <button class="type-btn" onclick="filterRentals('warehouse',this)">Warehouse 📦</button>
+          <button class="type-btn" onclick="filterRentals('studio',this)">Studio/Clinic 🎓</button>
+        </div>
+        <div class="rental-filter-row">
+          <div style="flex:1;min-width:120px">
+            <label class="tool-label">Max Budget (₹/mo)</label>
+            <input class="tool-input" id="rental-budget-filter" type="number" placeholder="e.g. 30000">
+          </div>
+          <div style="flex:1;min-width:100px">
+            <label class="tool-label">Min Area (sqft)</label>
+            <input class="tool-input" id="rental-area-filter" type="number" placeholder="e.g. 200">
+          </div>
+          <button class="btn btn-p" style="margin-top:22px" onclick="refineRentals()">🔍 Refine Search</button>
+        </div>
+        <div id="rentals-wrap"></div>
+        <div class="rental-foot">💡 Rental estimates are AI-generated based on current Bhubaneswar market data. Verify directly with owners.</div>
+      </div>
+
+      <!-- ════ ROI SIMULATOR ════ -->
+      <div class="new-section" id="sec-roi">
+        <div class="rc-ey">Financial Projections</div>
+        <div class="new-section-title">📈 ROI Timeline Simulator</div>
+        <div class="new-section-sub">Estimate your break-even and returns based on your investment plan.</div>
+        <div class="roi-grid">
+          <div>
+            <label class="tool-label">Total Investment (₹)</label>
+            <input class="tool-input" id="roi-investment" type="number" placeholder="e.g. 1500000">
+          </div>
+          <div>
+            <label class="tool-label">Expected Monthly Revenue (₹)</label>
+            <input class="tool-input" id="roi-revenue" type="number" placeholder="e.g. 400000">
+          </div>
+          <div>
+            <label class="tool-label">Monthly Fixed Costs (₹)</label>
+            <input class="tool-input" id="roi-costs" type="number" placeholder="e.g. 180000">
+          </div>
+          <div>
+            <label class="tool-label">Scenario</label>
+            <select class="tool-input drop" id="roi-scenario">
+              <option value="base">Base Case</option>
+              <option value="optimistic">Optimistic (+20%)</option>
+              <option value="pessimistic">Pessimistic (-20%)</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-p" onclick="calcROI('roi-investment','roi-revenue','roi-costs','roi-scenario','roi-result')">Calculate ROI</button>
+        <div id="roi-result"></div>
+      </div>
+
+      <!-- ════ LAUNCH CHECKLIST ════ -->
+      <div class="new-section" id="sec-checklist" style="display:none">
+        <div class="rc-ey">Action Plan</div>
+        <div class="new-section-title" id="checklist-title">✅ Launch Checklist</div>
+        <div class="checklist-bar-wrap"><div class="checklist-bar-fill" id="checklist-bar" style="width:0%"></div></div>
+        <div class="checklist-counter" id="checklist-counter">0 / 0 completed</div>
+        <div id="checklist-items"></div>
+      </div>
+
+      <!-- ════ AI ADVISOR CHAT ════ -->
+      <div class="new-section" id="sec-chat" style="display:none">
+        <div class="rc-ey">AI Business Advisor</div>
+        <div class="new-section-title">🤖 AI Business Advisor</div>
+        <div class="new-section-sub" id="chat-sub">Context-aware for your market. Ask anything about your opportunity.</div>
+        <div class="chat-history" id="chat-history"></div>
+        <div id="chat-typing" class="chat-typing" style="display:none">AI is typing…</div>
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Ask about costs, competition, strategies…" onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="btn btn-p" onclick="sendChat()">Send</button>
+        </div>
+      </div>
+
+      <div style="text-align:center;padding:16px 0 28px">
+        <button class="btn btn-g" onclick="reset()">↺ Start New Analysis</button>
+      </div>
     </div>
   </div>
 </div>
 
 <div id="toast"><span id="ti">✅</span><span id="tm"></span></div>
+
+<!-- ═══════════════ STANDALONE TOOL PAGES ═══════════════ -->
+
+<!-- COST ESTIMATOR -->
+<div class="page" id="pg-cost">
+  <nav><div class="logo">BizGap<span class="logo-dot"></span></div><div class="nav-r"><div class="pill">📍 Bhubaneswar</div><button class="pill-btn on" onclick="reset()">↺ Home</button></div></nav>
+  <div class="cnt" style="align-items:flex-start;overflow:auto">
+    <div class="tool-page-wrap">
+      <div class="tool-back" onclick="reset()">← Back to Home</div>
+      <div class="tool-title">💸 Cost Estimator</div>
+      <div class="tool-sub">Get a detailed startup cost breakdown for any sector and locality in Bhubaneswar.</div>
+      <div class="tool-card">
+        <div class="tool-form-grid">
+          <div><label class="tool-label">Sector</label><select class="tool-input drop" id="ce-sector"><option value="">Select Sector</option><option>Food & Beverage</option><option>Retail</option><option>Healthcare</option><option>Education</option><option>Tech & IT</option><option>Services</option><option>Hospitality</option><option>Beauty</option><option>Logistics</option><option>Finance</option><option>Real Estate</option><option>Other</option></select></div>
+          <div><label class="tool-label">Locality</label><select class="tool-input drop" id="ce-locality"><option value="">Select Locality</option><option>Patia</option><option>Chandrasekharpur</option><option>Jaydev Vihar</option><option>Damana</option><option>Infocity</option><option>KIIT Area</option><option>Nayapalli</option><option>IRC Village</option><option>Saheed Nagar</option><option>Rasulgarh</option><option>Mancheswar</option><option>Pokhariput</option><option>Baramunda</option><option>Khandagiri</option><option>Airport Area</option><option>Railway Station Area</option><option>Old Town</option></select></div>
+          <div><label class="tool-label">Business Size</label><select class="tool-input drop" id="ce-size"><option value="small">Small (1–3 staff)</option><option value="medium">Medium (4–10 staff)</option><option value="large">Large (10+ staff)</option></select></div>
+        </div>
+        <button class="btn btn-p" onclick="runCostEstimator()">Get Cost Breakdown</button>
+        <div id="ce-result" class="tool-result-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEME MATCHER -->
+<div class="page" id="pg-scheme">
+  <nav><div class="logo">BizGap<span class="logo-dot"></span></div><div class="nav-r"><div class="pill">📍 Bhubaneswar</div><button class="pill-btn on" onclick="reset()">↺ Home</button></div></nav>
+  <div class="cnt" style="align-items:flex-start;overflow:auto">
+    <div class="tool-page-wrap">
+      <div class="tool-back" onclick="reset()">← Back to Home</div>
+      <div class="tool-title">🏦 Scheme Matcher</div>
+      <div class="tool-sub">Find government and bank schemes matched to your sector and applicant profile.</div>
+      <div class="tool-card">
+        <div class="tool-form-grid">
+          <div><label class="tool-label">Sector</label><select class="tool-input drop" id="sm-sector"><option value="">Select Sector</option><option>Food & Beverage</option><option>Retail</option><option>Healthcare</option><option>Education</option><option>Tech & IT</option><option>Services</option><option>Hospitality</option><option>Beauty</option><option>Logistics</option><option>Finance</option><option>Real Estate</option><option>Other</option></select></div>
+          <div><label class="tool-label">Investment Range</label><select class="tool-input drop" id="sm-invest"><option>Under ₹50K</option><option>₹50K–2L</option><option>₹2L–10L</option><option>₹10L–50L</option><option>₹50L+</option></select></div>
+          <div><label class="tool-label">Business Status</label><select class="tool-input drop" id="sm-status"><option>Starting New</option><option>Existing Business</option><option>Expansion</option></select></div>
+          <div><label class="tool-label">Applicant Category</label><select class="tool-input drop" id="sm-category"><option>General</option><option>Women Entrepreneur</option><option>SC/ST</option><option>Youth Under 35</option></select></div>
+        </div>
+        <button class="btn btn-p" onclick="runSchemeMatcher()">Match Schemes</button>
+        <div id="sm-result" class="tool-result-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUPPLIER FINDER -->
+<div class="page" id="pg-supplier">
+  <nav><div class="logo">BizGap<span class="logo-dot"></span></div><div class="nav-r"><div class="pill">📍 Bhubaneswar</div><button class="pill-btn on" onclick="reset()">↺ Home</button></div></nav>
+  <div class="cnt" style="align-items:flex-start;overflow:auto">
+    <div class="tool-page-wrap">
+      <div class="tool-back" onclick="reset()">← Back to Home</div>
+      <div class="tool-title">📦 Supplier Finder</div>
+      <div class="tool-sub">Find local suppliers and vendors for your business in Bhubaneswar and Odisha.</div>
+      <div class="tool-card">
+        <div class="tool-form-grid">
+          <div><label class="tool-label">Sector</label><select class="tool-input drop" id="sf-sector"><option value="">Select Sector</option><option>Food & Beverage</option><option>Retail</option><option>Healthcare</option><option>Education</option><option>Tech & IT</option><option>Services</option><option>Hospitality</option><option>Beauty</option><option>Logistics</option><option>Finance</option><option>Real Estate</option><option>Other</option></select></div>
+          <div><label class="tool-label">Specific Need (optional)</label><input class="tool-input" id="sf-need" placeholder="e.g. cold storage equipment, packaging"></div>
+        </div>
+        <button class="btn btn-p" onclick="runSupplierFinder()">Find Suppliers</button>
+        <div id="sf-result" class="tool-result-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKLIST GENERATOR -->
+<div class="page" id="pg-checklist">
+  <nav><div class="logo">BizGap<span class="logo-dot"></span></div><div class="nav-r"><div class="pill">📍 Bhubaneswar</div><button class="pill-btn on" onclick="reset()">↺ Home</button></div></nav>
+  <div class="cnt" style="align-items:flex-start;overflow:auto">
+    <div class="tool-page-wrap">
+      <div class="tool-back" onclick="reset()">← Back to Home</div>
+      <div class="tool-title">✅ Launch Checklist</div>
+      <div class="tool-sub">Generate a complete launch checklist for your business in Bhubaneswar.</div>
+      <div class="tool-card">
+        <div class="tool-form-grid">
+          <div><label class="tool-label">Sector</label><select class="tool-input drop" id="cl-sector"><option value="">Select Sector</option><option>Food & Beverage</option><option>Retail</option><option>Healthcare</option><option>Education</option><option>Tech & IT</option><option>Services</option><option>Hospitality</option><option>Beauty</option><option>Logistics</option><option>Finance</option><option>Real Estate</option><option>Other</option></select></div>
+          <div><label class="tool-label">Business Structure</label><select class="tool-input drop" id="cl-structure"><option>Sole Proprietorship</option><option>Partnership</option><option>Private Limited</option><option>One Person Company (OPC)</option></select></div>
+        </div>
+        <button class="btn btn-p" onclick="runChecklistGenerator()">Generate Checklist</button>
+        <div id="cl-result" class="tool-result-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROI SIMULATOR (standalone) -->
+<div class="page" id="pg-roi">
+  <nav><div class="logo">BizGap<span class="logo-dot"></span></div><div class="nav-r"><div class="pill">📍 Bhubaneswar</div><button class="pill-btn on" onclick="reset()">↺ Home</button></div></nav>
+  <div class="cnt" style="align-items:flex-start;overflow:auto">
+    <div class="tool-page-wrap">
+      <div class="tool-back" onclick="reset()">← Back to Home</div>
+      <div class="tool-title">📈 ROI Simulator</div>
+      <div class="tool-sub">Calculate your break-even timeline and return on investment across different scenarios.</div>
+      <div class="tool-card">
+        <div class="roi-grid">
+          <div><label class="tool-label">Total Investment (₹)</label><input class="tool-input" id="s-roi-investment" type="number" placeholder="e.g. 1500000"></div>
+          <div><label class="tool-label">Expected Monthly Revenue (₹)</label><input class="tool-input" id="s-roi-revenue" type="number" placeholder="e.g. 400000"></div>
+          <div><label class="tool-label">Monthly Fixed Costs (₹)</label><input class="tool-input" id="s-roi-costs" type="number" placeholder="e.g. 180000"></div>
+          <div><label class="tool-label">Scenario</label><select class="tool-input drop" id="s-roi-scenario"><option value="base">Base Case</option><option value="optimistic">Optimistic (+20%)</option><option value="pessimistic">Pessimistic (-20%)</option></select></div>
+        </div>
+        <button class="btn btn-p" onclick="calcROI('s-roi-investment','s-roi-revenue','s-roi-costs','s-roi-scenario','s-roi-result')">Calculate ROI</button>
+        <div id="s-roi-result" class="tool-result-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RENTAL FINDER (standalone) -->
+<div class="page" id="pg-rental">
+  <nav><div class="logo">BizGap<span class="logo-dot"></span></div><div class="nav-r"><div class="pill">📍 Bhubaneswar</div><button class="pill-btn on" onclick="reset()">↺ Home</button></div></nav>
+  <div class="cnt" style="align-items:flex-start;overflow:auto">
+    <div class="tool-page-wrap">
+      <div class="tool-back" onclick="reset()">← Back to Home</div>
+      <div class="tool-title">🏪 Rental Finder</div>
+      <div class="tool-sub">Find commercial spaces available for rent in Bhubaneswar matching your requirements.</div>
+      <div class="tool-card">
+        <div class="tool-form-grid">
+          <div><label class="tool-label">Locality</label><select class="tool-input drop" id="rf-locality"><option value="">Select Locality</option><option>Patia</option><option>Chandrasekharpur</option><option>Jaydev Vihar</option><option>Damana</option><option>Infocity</option><option>KIIT Area</option><option>Nayapalli</option><option>IRC Village</option><option>Saheed Nagar</option><option>Rasulgarh</option><option>Mancheswar</option><option>Pokhariput</option><option>Baramunda</option><option>Khandagiri</option><option>Airport Area</option><option>Railway Station Area</option><option>Old Town</option></select></div>
+          <div><label class="tool-label">Business Type</label><select class="tool-input drop" id="rf-biztype"><option>Restaurant/Café</option><option>Retail Shop</option><option>Clinic</option><option>Coaching Centre</option><option>Salon</option><option>Office</option><option>Warehouse</option><option>Cloud Kitchen</option><option>Gym</option></select></div>
+          <div><label class="tool-label">Budget ₹/month</label><input class="tool-input" id="rf-budget" type="number" placeholder="e.g. 25000"></div>
+          <div><label class="tool-label">Min Area (sqft)</label><input class="tool-input" id="rf-area" type="number" placeholder="e.g. 300"></div>
+          <div><label class="tool-label">Floor Preference</label><select class="tool-input drop" id="rf-floor"><option>Any</option><option>Ground Floor Only</option><option>Upper Floor OK</option></select></div>
+          <div><label class="tool-label">Parking Required</label><select class="tool-input drop" id="rf-parking"><option>No</option><option>Yes</option></select></div>
+        </div>
+        <button class="btn btn-p" onclick="runRentalFinder()">🔍 Find Spaces</button>
+        <div id="rf-result" class="tool-result-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 // ── BG CANVAS ──
@@ -1975,6 +2365,1106 @@ function toast(ic,msg){
   const t=document.getElementById('toast');
   document.getElementById('ti').textContent=ic;document.getElementById('tm').textContent=msg;
   t.classList.add('show');setTimeout(()=>t.classList.remove('show'),4000);
+}
+
+// ══════════════════════════════════════════════════════════════
+// ANTHROPIC API CONFIG
+// ══════════════════════════════════════════════════════════════
+const ANTHROPIC_API_KEY = 'YOUR_KEY_HERE'; // Replace with your Anthropic API key
+
+async function callClaude(systemPrompt, userPrompt, maxTokens=3000) {
+  if(ANTHROPIC_API_KEY === 'YOUR_KEY_HERE') return null; // Use demo data
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-calls': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: maxTokens,
+        system: systemPrompt,
+        messages: [{role:'user', content: userPrompt}]
+      })
+    });
+    const data = await resp.json();
+    if(data.error) throw new Error(data.error.message);
+    const text = data.content[0].text;
+    return JSON.parse(text.replace(/```json\n?|```\n?/g,'').trim());
+  } catch(e) {
+    console.error('Claude API error:', e);
+    return null;
+  }
+}
+
+async function callClaudeChat(systemPrompt, messages, maxTokens=1000) {
+  if(ANTHROPIC_API_KEY === 'YOUR_KEY_HERE') {
+    return "I'm running in demo mode (no API key set). To get real AI responses, add your Anthropic API key at the top of the script. In a live environment, I'd give you specific, actionable advice for your market analysis.";
+  }
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-calls': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: maxTokens,
+        system: systemPrompt,
+        messages: messages
+      })
+    });
+    const data = await resp.json();
+    if(data.error) throw new Error(data.error.message);
+    return data.content[0].text;
+  } catch(e) {
+    console.error('Chat API error:', e);
+    return 'Sorry, I encountered an error. Please try again.';
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// DEMO DATA — Dynamic, sector-aware
+// ══════════════════════════════════════════════════════════════
+const SECTOR_DEMO = {
+  healthcare: {
+    gapScore: 74,
+    demandLevel: 'High',
+    competitorCount: 3,
+    riskLevel: 'Low',
+    title: 'Underserved Multi-Specialty Clinic in Residential Zone',
+    recommendation: 'The selected locality has strong residential density and working professionals but limited primary healthcare access. Only 3 small unorganized clinics operate within 3km, all with poor availability and no appointment systems. A well-equipped multi-specialty clinic with a doctor-on-call and digital booking can capture 80+ patients/day within 6 months.',
+    opportunities: [
+      {title:'Multi-Specialty Outpatient Clinic',whyNow:'Nearest organized clinic is 4km away — patients travel long distances for basic consultations.',description:'Offer GP, paediatrics, gynaecology and ENT under one roof. Digital appointment system, lab tie-up, and pharmacy on-site. Revenue from OPD, investigations and pharmacy referrals compounds quickly.'},
+      {title:'Diagnostics & Pathology Lab',whyNow:'No NABL-accredited diagnostic lab within 3km — hospital referrals going to distant labs daily.',description:'Home sample collection + walk-in service. Tie-up with nearby hospitals and corporate offices for annual health checkups provides a guaranteed recurring revenue stream from month one.'},
+      {title:'Corporate Health & Wellness Clinic',whyNow:'IT companies near this locality actively seek empanelled clinic for employee health benefits.',description:'B2B tie-up with 5–8 companies covers 500–2,000 employees. Monthly retainer income plus per-visit billing from corporate OPD gives stable, predictable cash flow before walk-in patients ramp up.'}
+    ],
+    startupCost: {
+      rent:{min:25000,max:55000},
+      equipment:{min:300000,max:800000},
+      staffMonthly:{min:80000,max:180000},
+      workingCapital:{min:100000,max:200000},
+      total:{min:700000,max:2000000}
+    },
+    competitors: [
+      {name:'Dr. Mishra\'s General Clinic',rating:'3.8',strength:'Medium',weakness:'Single doctor, no appointment system — long walk-in queues, no specialist availability.'},
+      {name:'Arogya Health Centre',rating:'3.5',strength:'Low',weakness:'Limited to GP consultation only, no diagnostics or pharmacy on-site, closes by 7 PM.'},
+      {name:'Sarada Nursing Home',rating:'4.0',strength:'Medium',weakness:'Inpatient focus only — no OPD walk-in, no home visit or corporate tie-up service.'}
+    ],
+    schemes: [
+      {name:'PM Mudra Yojana — Tarun',maxLoan:'₹10 Lakh',interestRate:'8.5%',subsidy:null,bankInBhubaneswar:'SBI Main Branch, Bhubaneswar',eligibility:'Any Indian citizen starting/expanding micro/small business'},
+      {name:'Ayushman Bharat Empanelment',maxLoan:'N/A (revenue scheme)',interestRate:'N/A',subsidy:'Guaranteed govt. billing',bankInBhubaneswar:'PMJAY Odisha Office, Unit-5',eligibility:'Clinics/hospitals meeting NQA standards — apply at pmjay.gov.in'},
+      {name:'MSME Healthcare Scheme — Odisha',maxLoan:'₹50 Lakh',interestRate:'6% subsidized',subsidy:'25% capital subsidy',bankInBhubaneswar:'Bank of Baroda, Saheed Nagar Branch',eligibility:'Healthcare MSMEs registered in Odisha'}
+    ],
+    persona: {
+      ageRange:'28–55',
+      incomeRange:'₹25K–80K/month',
+      lifestyle:'Working professional or family with school-going children; values convenience and quality care',
+      currentPain:'No trusted, accessible clinic nearby — forced to travel 4–6 km for basic consultation or wait 2–3 hours at hospitals',
+      spendBehaviour:'Spend ₹300–1,500 per visit, prefer fixed-fee doctors over hospitals, prioritize hygiene and appointment availability',
+      currentAlternatives:'Government hospital OPD (crowded, long wait), distant private hospitals, or home remedies for minor ailments'
+    },
+    suppliers: [
+      {name:'Kalinga Medical Equipments',area:'Saheed Nagar, Bhubaneswar',supplies:'Diagnostic equipment, BP monitors, ECG machines, examination tables',minOrder:'₹15,000',tip:'They offer 12-month AMC on diagnostic equipment — negotiate it into the purchase price for new clinics.'},
+      {name:'Bhubaneswar Pharma Distributors',area:'Unit-4 Market, Bhubaneswar',supplies:'Medicines, surgical consumables, OTC drugs',minOrder:'₹5,000',tip:'Open a credit account — 30-day credit terms are standard for registered clinics with a pharmacy licence.'},
+      {name:'Odisha Lab Supplies Co.',area:'Mancheswar Industrial Area',supplies:'Pathology reagents, sample collection kits, lab consumables',minOrder:'₹8,000',tip:'Bundled reagent + equipment leasing is available — zero upfront cost on analysers if you commit to reagent volume.'}
+    ],
+    checklist: [
+      {task:'Clinical Establishment Registration',detail:'Register under Clinical Establishments Act at DMET Odisha — dmetodisha.gov.in',category:'Licence'},
+      {task:'Biomedical Waste Authorisation',detail:'Mandatory for all clinics — apply to Odisha State PCB, Paribesh Bhawan, Bhubaneswar',category:'Licence'},
+      {task:'GST Registration',detail:'Register on gst.gov.in — medical services are largely GST-exempt but GST needed for equipment purchases',category:'Registration'},
+      {task:'Shop & Establishment Registration',detail:'Apply to BMC (Bhubaneswar Municipal Corporation) within 30 days of opening',category:'Registration'},
+      {task:'Hire Doctors & Nursing Staff',detail:'Source via NMC-registered platforms, local medical colleges, or Odisha Medical Council listings',category:'Hiring'},
+      {task:'Clinic Interior & Equipment Setup',detail:'Standard OPD: 3 consultation rooms, waiting area, dispensary, sample collection cubicle',category:'Setup'},
+      {task:'Ayushman Bharat Empanelment',detail:'Apply at pmjay.gov.in/empanelment — enables cashless billing for govt-insured patients',category:'Platform'},
+      {task:'Open Current Account & POS Setup',detail:'SBI/HDFC — required for UPI, card payments and insurance settlements',category:'Finance'}
+    ],
+    rentalSpaces: [
+      {name:'Ground Floor Corner Unit — Main Road Facing',areaSqFt:800,type:'clinic',monthlyRent:32000,walkMinutes:'1 min walk',tags:['Ground Floor','Corner Plot','Easy Parking','Main Road'],whyItFits:'Ground floor with parking is essential for elderly and sick patients — corner visibility maximises walk-in discovery.',isBestMatch:true},
+      {name:'First Floor Space — Residential Complex',areaSqFt:1200,type:'clinic',monthlyRent:22000,walkMinutes:'4 min walk',tags:['First Floor','Lift Access','Spacious','Residential Area'],whyItFits:'Larger space allows multi-room OPD setup — lower rent improves margins in ramp-up months.',isBestMatch:false},
+      {name:'Commercial Unit — Near Hospital Road',areaSqFt:600,type:'clinic',monthlyRent:28000,walkMinutes:'3 min walk',tags:['Near Hospital','High Footfall','Ground Floor'],whyItFits:'Hospital adjacency drives overflow patient footfall — strong referral catchment from hospital discharge.',isBestMatch:false},
+      {name:'Medical Complex Shop Unit',areaSqFt:500,type:'clinic',monthlyRent:35000,walkMinutes:'2 min walk',tags:['Medical Complex','Already Permitted','Pharmacy Neighbour'],whyItFits:'Pre-approved medical use zoning — no renovation permission needed. Pharmacy neighbour drives cross-referrals.',isBestMatch:false}
+    ]
+  },
+  food: {
+    gapScore: 78,
+    demandLevel: 'High',
+    competitorCount: 5,
+    riskLevel: 'Low',
+    title: 'Underserved Cloud Kitchen & Healthy Food Hub',
+    recommendation: 'The locality\'s student and IT workforce population is massively underserved by quality food delivery options. With delivery demand growing 34% YoY and only a handful of organized competitors, a cloud kitchen running multiple virtual brands can achieve breakeven in 8–10 months. Early entry secures Zomato/Swiggy ranking advantage before the market fills.',
+    opportunities: [
+      {title:'Multi-Brand Cloud Kitchen',whyNow:'Delivery demand up 34% YoY — Zomato/Swiggy ranking advantage goes to first movers.',description:'Run 3 virtual restaurant brands from one kitchen — North Indian, Healthy Bowls, Biryani. Low overhead, no dine-in cost, access to 25,000+ daily delivery users.'},
+      {title:'Tiffin Subscription Service',whyNow:'Large student/working population needing daily meals — zero organized tiffin brand in 4km.',description:'Monthly subscription at ₹2,800–3,500/month with doorstep delivery. B2B hostel contracts guarantee baseline revenue from month one.'},
+      {title:'Health Food Quick Counter',whyNow:'IT professionals actively seek healthy fast lunch — current options are all fried street food.',description:'Grain bowls, wraps and salads counter near commercial zone. Average ticket ₹140–180, targeting 80–120 covers/day.'}
+    ],
+    startupCost: {
+      rent:{min:18000,max:35000},
+      equipment:{min:120000,max:280000},
+      staffMonthly:{min:45000,max:90000},
+      workingCapital:{min:60000,max:120000},
+      total:{min:350000,max:750000}
+    },
+    competitors: [
+      {name:'Local Biryani & Curry House',rating:'4.1',strength:'High',weakness:'Limited menu diversity — only rice dishes, no healthy or diet options available.'},
+      {name:'Campus Canteen (University/College)',rating:'3.5',strength:'Medium',weakness:'Poor quality control, no home delivery, closes at 7 PM — misses evening demand entirely.'},
+      {name:'Neighbourhood Dhaba',rating:'3.3',strength:'Low',weakness:'Unorganized, no digital presence, no app ordering — inaccessible to younger, app-first customers.'}
+    ],
+    schemes: [
+      {name:'PM Mudra Yojana — Tarun',maxLoan:'₹10 Lakh',interestRate:'8.5%',subsidy:null,bankInBhubaneswar:'SBI Patia Branch, Utkal Grameen Bank',eligibility:'Any Indian citizen starting/expanding micro/small business'},
+      {name:'PMFME Scheme',maxLoan:'₹10 Lakh',interestRate:'5% effective',subsidy:'35% capital subsidy',bankInBhubaneswar:'Union Bank of India, Chandrasekharpur Branch',eligibility:'Micro food processing units, individual/SHG/FPO'},
+      {name:'Startup Odisha Grant',maxLoan:'₹15 Lakh',interestRate:'0% (grant component)',subsidy:'Up to ₹5L non-repayable',bankInBhubaneswar:'SIDBI Bhubaneswar Office, Janpath',eligibility:'Odisha-based startups with innovative model, <3 years old'}
+    ],
+    persona: {
+      ageRange:'19–32',
+      incomeRange:'₹15K–55K/month',
+      lifestyle:'Tech-savvy, app-first, time-poor due to long college/work hours',
+      currentPain:'No quality, affordable, healthy meal option within 2km delivering in under 30 minutes',
+      spendBehaviour:'Spend ₹80–200/meal, order 4–6 times/week, brand-loyal once quality is established',
+      currentAlternatives:'Campus canteens (poor quality), random dhabas, occasional Swiggy from distant restaurants'
+    },
+    suppliers: [
+      {name:'Odisha Agro Trade Centre',area:'Baramunda Wholesale Market',supplies:'Fresh vegetables, grains, pulses',minOrder:'₹3,000',tip:'Arrive by 5:30 AM for best prices — Wednesday wholesale rates are 15% lower.'},
+      {name:'Bhubaneswar Food Packaging Hub',area:'Mancheswar Industrial Estate',supplies:'Food containers, packaging, disposables',minOrder:'₹5,000',tip:'Ask for restaurant bulk rate — unlocks 22% discount on containers above 500 units.'},
+      {name:'Kalinga Spices & Masala Traders',area:'Old Town Market',supplies:'Spices, masalas, condiments',minOrder:'₹1,500',tip:'Their Restaurant Premium blended masalas are used by 30+ restaurants — consistent flavour profile.'}
+    ],
+    checklist: [
+      {task:'FSSAI Food License',detail:'Apply on foscos.fssai.gov.in — Basic license for turnover <₹12L, State license for ₹12L+',category:'Licence'},
+      {task:'GST Registration',detail:'Register on gst.gov.in if annual turnover >₹20L. Mandatory for Zomato/Swiggy listing.',category:'Registration'},
+      {task:'Shop & Establishment Registration',detail:'Apply to BMC Bhubaneswar within 30 days of starting operations',category:'Registration'},
+      {task:'Kitchen Setup & FSSAI Inspection',detail:'Install exhaust, fire extinguisher, wash basin — mandatory for FSSAI State licence',category:'Setup'},
+      {task:'Zomato/Swiggy Partner Onboarding',detail:'Apply at partner.zomato.com and partner.swiggy.in — takes 7–14 working days',category:'Platform'},
+      {task:'Hire Cook & Delivery Partners',detail:'Source cooks via OLX Bhubaneswar or Apna.co. Delivery via Shadowfax DSP.',category:'Hiring'},
+      {task:'Open Current Account',detail:'SBI/HDFC current account with GST cert for payment gateway integration',category:'Finance'},
+      {task:'Fire Safety NOC',detail:'Mandatory for food businesses — Bhubaneswar Fire Station, Sachivalaya Marg',category:'Licence'}
+    ],
+    rentalSpaces: [
+      {name:'Ground Floor Commercial Unit — Main Road Facing',areaSqFt:350,type:'food',monthlyRent:28000,walkMinutes:'2 min walk',tags:['Ground Floor','Main Road','High Foot Traffic'],whyItFits:'High student and office footfall — ideal for cloud kitchen with small counter pickup.',isBestMatch:true},
+      {name:'First Floor Space — Commercial Block',areaSqFt:600,type:'food',monthlyRent:18000,walkMinutes:'5 min walk',tags:['First Floor','Large Kitchen Space','Storage Room'],whyItFits:'Spacious layout suits full back-end cloud kitchen operations with lower rent.',isBestMatch:false},
+      {name:'Basement Commercial Unit',areaSqFt:800,type:'warehouse',monthlyRent:14000,walkMinutes:'8 min walk',tags:['Basement','Large Space','Cold Storage Space'],whyItFits:'Large storage area reduces packaging and raw material holding costs.',isBestMatch:false},
+      {name:'Compact Shop — Bus Stop Junction',areaSqFt:200,type:'food',monthlyRent:22000,walkMinutes:'1 min walk',tags:['Transit Junction','Maximum Footfall','Ground Floor'],whyItFits:'Peak transit footfall — strong for counter pickup and impulse breakfast/lunch orders.',isBestMatch:false}
+    ]
+  },
+  education: {
+    gapScore: 72,
+    demandLevel: 'High',
+    competitorCount: 4,
+    riskLevel: 'Low',
+    title: 'Unmet Demand for Quality Coaching & Skill Training',
+    recommendation: 'The locality has a high density of students and young professionals with no quality coaching or skill-training institute within 3km. Existing options are unorganized home tutors with no structured curriculum. A coaching centre with UPSC/competitive exam focus or tech upskilling track can fill this gap and achieve batch viability within the first month.',
+    opportunities: [
+      {title:'Competitive Exam Coaching Institute',whyNow:'UPSC/GATE/OSSE aspirant demand is high with zero quality coaching within 4km.',description:'Batch model with 20–30 students per batch at ₹3,000–6,000/month. Faculty sourced from retired government officers and IIT/IIM alumni. Strong word-of-mouth growth in exam-aspirant communities.'},
+      {title:'Tech Upskilling & IT Training Centre',whyNow:'IT companies near the locality actively seek trained resources — upskilling demand is immediate.',description:'Python, AI, Data Analytics and Cloud certification courses in evening batch format. B2B tie-ups with IT parks for sponsored employee training generate bulk revenue before walk-in students enrol.'},
+      {title:'After-School Tuition & Daycare Centre',whyNow:'Working parents in the area have no trusted after-school academic support within walking distance.',description:'Structured tuition for classes 6–10 with subject specialists. 80%+ annual re-enrolment rate. Low churn, predictable monthly revenue, and strong parent referral network.'}
+    ],
+    startupCost: {
+      rent:{min:12000,max:30000},
+      equipment:{min:80000,max:200000},
+      staffMonthly:{min:60000,max:150000},
+      workingCapital:{min:40000,max:80000},
+      total:{min:250000,max:600000}
+    },
+    competitors: [
+      {name:'Home Tutor Network (Unorganized)',rating:'3.4',strength:'Low',weakness:'No structured curriculum, no accountability, students change tutors every semester — very low retention.'},
+      {name:'Generic Coaching Centre',rating:'3.7',strength:'Medium',weakness:'Focuses only on school tuitions — no competitive exam or skill-based courses, no digital learning support.'},
+      {name:'Online Platform Access Point',rating:'3.2',strength:'Low',weakness:'Students struggle with self-discipline in pure online format — high dropout rates, no local mentor support.'}
+    ],
+    schemes: [
+      {name:'NSDC Skill India Funding',maxLoan:'₹25 Lakh',interestRate:'7%',subsidy:'Project funding available',bankInBhubaneswar:'NSDC Partner Bank, Bhubaneswar',eligibility:'Vocational training centres partnered with NSDC under Skill India mission'},
+      {name:'PM Mudra Yojana — Kishor',maxLoan:'₹5 Lakh',interestRate:'9%',subsidy:null,bankInBhubaneswar:'Canara Bank, Saheed Nagar Branch',eligibility:'Established micro businesses needing expansion capital'},
+      {name:'Startup Odisha',maxLoan:'₹15 Lakh',interestRate:'0% (grant)',subsidy:'Up to ₹5L non-repayable grant',bankInBhubaneswar:'SIDBI Bhubaneswar Office',eligibility:'Odisha-based startups <3 years with innovative approach'}
+    ],
+    persona: {
+      ageRange:'16–30',
+      incomeRange:'Student / ₹20K–50K (parents)',
+      lifestyle:'Exam aspirant or young professional seeking career advancement; family values education investment',
+      currentPain:'No structured coaching within 3km — commuting 6–8 km daily wastes 2+ hours and adds ₹1,500+/month travel cost',
+      spendBehaviour:'Families spend ₹2,000–8,000/month on education willingly — education is never seen as discretionary spending',
+      currentAlternatives:'Home tutors (variable quality), online platforms (low completion), long-distance coaching in central Bhubaneswar'
+    },
+    suppliers: [
+      {name:'Odisha Book Depot',area:'Master Canteen, Bhubaneswar',supplies:'UPSC/GATE/OSSE study materials, reference books, test series',minOrder:'₹2,000',tip:'They offer 15% wholesale discount for bulk institutional purchases above 50 books — get a standing order arrangement.'},
+      {name:'Kalinga Stationery Mart',area:'Saheed Nagar, Bhubaneswar',supplies:'Whiteboards, markers, notebooks, printed materials',minOrder:'₹1,000',tip:'Negotiate a quarterly supply contract — ensures consistent stock and an additional 8–10% bulk discount.'},
+      {name:'Digital Education Systems',area:'Infocity, Bhubaneswar',supplies:'Smart boards, projectors, LMS software, desktop systems',minOrder:'₹20,000',tip:'Ask for education-sector pricing — vendors typically offer 20% off MRP for registered coaching institutes.'}
+    ],
+    checklist: [
+      {task:'Trade Licence from BMC',detail:'Apply at Bhubaneswar Municipal Corporation — mandatory for operating a commercial coaching institute',category:'Licence'},
+      {task:'GST Registration',detail:'Register on gst.gov.in — education services mostly exempt, but GST needed for equipment and materials',category:'Registration'},
+      {task:'NSDC/Skill India Registration',detail:'Register at nsdcindia.org to access government-funded batch programmes and PMKVY scheme',category:'Platform'},
+      {task:'Shop & Establishment Registration',detail:'Apply to Labour Department, Odisha within 30 days of starting operations',category:'Registration'},
+      {task:'Classroom Setup',detail:'Minimum: 3 classrooms, 20 seats each, whiteboard, projector, air circulation — BMC fire compliance mandatory',category:'Setup'},
+      {task:'Hire Faculty',detail:'Source via local university job boards, retired government officer networks, or LinkedIn Bhubaneswar',category:'Hiring'},
+      {task:'Website & Online Enrolment',detail:'Build basic website with online fee payment — Google Ads for locality-targeted student acquisition',category:'Platform'},
+      {task:'Open Current Account',detail:'Separate current account for fee collection — SBI/HDFC with education institution account type',category:'Finance'}
+    ],
+    rentalSpaces: [
+      {name:'First Floor Office Space — Commercial Building',areaSqFt:1000,type:'office',monthlyRent:18000,walkMinutes:'3 min walk',tags:['First Floor','Multiple Rooms','Good Ventilation','Quiet Zone'],whyItFits:'Multi-room layout allows separate classrooms per batch — essential for running parallel coaching sessions.',isBestMatch:true},
+      {name:'Ground Floor Hall Space',areaSqFt:1500,type:'office',monthlyRent:28000,walkMinutes:'2 min walk',tags:['Ground Floor','Open Hall','Main Road Visibility'],whyItFits:'Large open space can be partitioned for multiple classrooms — high visibility attracts walk-in enquiries.',isBestMatch:false},
+      {name:'Residential Flat Conversion',areaSqFt:800,type:'office',monthlyRent:12000,walkMinutes:'5 min walk',tags:['Low Rent','Quiet','Residential Lane'],whyItFits:'Budget option for early-stage — lower rent reduces burn while building student base in first 6 months.',isBestMatch:false},
+      {name:'Commercial Complex Unit — Near School',areaSqFt:700,type:'studio',monthlyRent:20000,walkMinutes:'1 min walk',tags:['Near School','Student Footfall','Ground Floor'],whyItFits:'Proximity to schools creates natural walk-in enquiry pipeline from parents picking up children.',isBestMatch:false}
+    ]
+  },
+  beauty: {
+    gapScore: 76,
+    demandLevel: 'High',
+    competitorCount: 4,
+    riskLevel: 'Low',
+    title: 'Premium Salon & Wellness Gap in Urban Locality',
+    recommendation: 'Rising disposable income among IT professionals and working women in the locality has created unmet demand for premium, hygienic grooming and wellness services. Existing salons are unorganized, unhygienic and use no branded products. A professional unisex salon with trained staff, branded products and an online booking system can capture loyal clients within 3 months.',
+    opportunities: [
+      {title:'Premium Unisex Salon',whyNow:'No organized, branded salon within 3km — clients travel to central Bhubaneswar for basic haircuts.',description:'Offer haircut, colouring, skincare and grooming in an AC, hygienic environment with branded products. Membership plans at ₹1,500–3,500/month drive monthly recurring revenue.'},
+      {title:'Women-Only Beauty Studio',whyNow:'Working women in the locality prefer a gender-exclusive, safe and private grooming environment.',description:'Focused on hair, skin, waxing and bridal packages. Appointment-only model reduces waiting and increases trust. Bridal packages at ₹8,000–25,000 are high-margin weekend revenue.'},
+      {title:'Skincare & Dermatology Consultation Clinic',whyNow:'6-month waiting lists at central Bhubaneswar dermatology clinics — gap is large and growing.',description:'Partner with a MBBS dermatologist for weekly OPD + retail cosmeceuticals. Combination of consultation fee and product sales creates two revenue streams from one space.'}
+    ],
+    startupCost: {
+      rent:{min:20000,max:45000},
+      equipment:{min:200000,max:500000},
+      staffMonthly:{min:70000,max:150000},
+      workingCapital:{min:60000,max:120000},
+      total:{min:450000,max:1100000}
+    },
+    competitors: [
+      {name:'Local Unisex Saloon (Unorganized)',rating:'3.3',strength:'Low',weakness:'No trained staff, uses generic products, unhygienic setup — zero brand trust or repeat clientele.'},
+      {name:'Women\'s Parlour (Home-Based)',rating:'3.6',strength:'Low',weakness:'Cramped space, no air conditioning, limited service menu — cannot handle volume or premium clients.'},
+      {name:'Basic Gents Barber Shop',rating:'3.8',strength:'Medium',weakness:'Only basic haircuts — no grooming, skincare, beard styling or premium services whatsoever.'}
+    ],
+    schemes: [
+      {name:'PM Mudra Yojana — Tarun',maxLoan:'₹10 Lakh',interestRate:'8.5%',subsidy:null,bankInBhubaneswar:'SBI Branch, Bhubaneswar',eligibility:'Any individual starting/expanding a beauty or wellness business'},
+      {name:'Stand-Up India (Women Entrepreneur)',maxLoan:'₹1 Crore',interestRate:'Base rate + 3%',subsidy:null,bankInBhubaneswar:'Bank of India, IRC Village Branch',eligibility:'Women entrepreneurs from SC/ST or general category for greenfield enterprise'},
+      {name:'Startup Odisha',maxLoan:'₹15 Lakh',interestRate:'0% (grant)',subsidy:'Up to ₹5L grant',bankInBhubaneswar:'SIDBI Bhubaneswar',eligibility:'Odisha-based startups with innovation focus, <3 years old'}
+    ],
+    persona: {
+      ageRange:'22–42',
+      incomeRange:'₹25K–80K/month',
+      lifestyle:'Grooming-conscious working professional or homemaker — values hygiene, trained staff and premium products',
+      currentPain:'Nearest quality salon is 4–5 km away — local options are unhygienic with untrained staff using cheap products',
+      spendBehaviour:'Spend ₹500–3,000 per visit, visit 2–3 times/month — willing to pay premium for trusted, hygienic, professional service',
+      currentAlternatives:'Travelling to Saheed Nagar or IRC Village for quality salon — 30–45 minutes each way, very inconvenient'
+    },
+    suppliers: [
+      {name:'Loreal Professional Distributor Odisha',area:'Janpath, Bhubaneswar',supplies:'Loreal, Matrix hair colour, shampoos, treatments',minOrder:'₹10,000',tip:'Open a salon account for 20% trade discount — show trade licence and shop rent agreement to qualify.'},
+      {name:'Bhubaneswar Beauty Wholesale Hub',area:'Unit-4, Bhubaneswar',supplies:'Waxing strips, nail products, disposables, tools',minOrder:'₹3,000',tip:'Buy disposables in monthly bulk — 15% saving vs. retail. Keep 3-month stock to avoid supply disruption.'},
+      {name:'Schwarzkopf & Wella Distributor',area:'Saheed Nagar, Bhubaneswar',supplies:'Professional hair colour, bleach, styling products',minOrder:'₹8,000',tip:'Attend their quarterly training events — free education for stylists and new product samples included.'}
+    ],
+    checklist: [
+      {task:'Trade Licence from BMC',detail:'Apply at Bhubaneswar Municipal Corporation — required for commercial beauty salon operation',category:'Licence'},
+      {task:'GST Registration',detail:'Register on gst.gov.in — beauty services attract 18% GST above ₹20L annual turnover',category:'Registration'},
+      {task:'Shop & Establishment Registration',detail:'Apply to Labour Department, Odisha within 30 days of starting',category:'Registration'},
+      {task:'Salon Interior & Equipment Setup',detail:'Minimum: 4 styling stations, wash basins, AC, lighting, reception desk, product display',category:'Setup'},
+      {task:'Hire Trained Stylists & Beauticians',detail:'Source via Apna.co Bhubaneswar, local beauty school placements, or VLCC/Lakme alumni network',category:'Hiring'},
+      {task:'Brand Product Account Opening',detail:'Open trade accounts with Loreal, Matrix or Wella distributors for professional product access and discounts',category:'Setup'},
+      {task:'Online Booking & Social Media Setup',detail:'Set up Salon booking via Treato or Sulekha. Create Instagram page with before/after content — key acquisition channel',category:'Platform'},
+      {task:'Open Current Account',detail:'SBI/HDFC current account for UPI, card payments and payroll',category:'Finance'}
+    ],
+    rentalSpaces: [
+      {name:'Ground Floor Corner Shop — Main Road',areaSqFt:600,type:'studio',monthlyRent:30000,walkMinutes:'2 min walk',tags:['Ground Floor','Corner Visibility','Main Road','Easy Parking'],whyItFits:'Corner ground floor with parking maximises walk-in discovery — essential for salon visibility and first impression.',isBestMatch:true},
+      {name:'First Floor Boutique Space',areaSqFt:900,type:'studio',monthlyRent:20000,walkMinutes:'4 min walk',tags:['First Floor','Private Setting','Lift Access','Spacious'],whyItFits:'Privacy and spacious layout appeals to premium clientele — lower rent improves ROI in first year.',isBestMatch:false},
+      {name:'Commercial Complex Unit — Residential Area',areaSqFt:500,type:'studio',monthlyRent:22000,walkMinutes:'3 min walk',tags:['Residential Area','Walk-In Friendly','Quiet Zone'],whyItFits:'Residential proximity means repeat neighbourhood clients — strong loyalty and word-of-mouth growth.',isBestMatch:false},
+      {name:'Ground Floor Unit Near Women\'s College',areaSqFt:450,type:'studio',monthlyRent:25000,walkMinutes:'1 min walk',tags:['Near College','Student Footfall','Ground Floor'],whyItFits:'Student footfall for affordable services plus working women from nearby offices creates two client segments.',isBestMatch:false}
+    ]
+  },
+  retail: {
+    gapScore: 68,
+    demandLevel: 'Medium',
+    competitorCount: 6,
+    riskLevel: 'Medium',
+    title: 'Organized Retail Gap in Underserved Residential Zone',
+    recommendation: 'The locality has strong residential density but relies on unorganized kiranas and distant malls. An organized, well-stocked neighbourhood retail format covering electronics, household goods or specialty categories can capture significant wallet share. Differentiation via product curation, loyalty cards and home delivery creates a defensible advantage over unorganized players.',
+    opportunities: [
+      {title:'Electronics & Mobile Accessories Store',whyNow:'No organized electronics outlet within 3km — customers travel to Saheed Nagar or Rasulgarh for purchases.',description:'Stocked with mobiles, accessories, headphones, smart home devices. Authorized service centre tie-up adds recurring revenue. EMI options drive large-ticket purchases from salaried residents.'},
+      {title:'Specialty Grocery & Organic Foods Store',whyNow:'Rising health consciousness with no organic/specialty grocery store in the locality.',description:'Stock organic staples, imported snacks, diet foods alongside regular grocery. Target the growing ₹40K+/month household segment willing to pay premium for quality and convenience.'},
+      {title:'Home Decor & Furnishings Showroom',whyNow:'New residential projects nearby mean hundreds of new households needing home décor.',description:'Curated home furnishing, décor and kitchenware showroom targeting new homeowners. Interior consultation add-on at ₹500/visit upsells larger purchases.'}
+    ],
+    startupCost: {
+      rent:{min:20000,max:50000},
+      equipment:{min:150000,max:400000},
+      staffMonthly:{min:40000,max:100000},
+      workingCapital:{min:200000,max:500000},
+      total:{min:600000,max:1500000}
+    },
+    competitors: [
+      {name:'Local Kirana Store',rating:'3.9',strength:'Medium',weakness:'Limited SKUs, no organized billing, no card payment, no delivery — cannot serve premium or convenience-first shoppers.'},
+      {name:'Mobile Accessories Street Stall',rating:'3.2',strength:'Low',weakness:'Only accessories — no branded products, no warranty, no repair, no EMI option for large-ticket items.'},
+      {name:'General Provision Shop',rating:'3.6',strength:'Medium',weakness:'Unorganized, limited stock depth, no loyalty programme — price competitive only, not quality or experience competitive.'}
+    ],
+    schemes: [
+      {name:'PM Mudra Yojana — Tarun',maxLoan:'₹10 Lakh',interestRate:'8.5%',subsidy:null,bankInBhubaneswar:'SBI Bhubaneswar Main Branch',eligibility:'Any Indian citizen starting/expanding a retail business'},
+      {name:'ODISHA MSME Policy — Retail',maxLoan:'₹30 Lakh',interestRate:'9%',subsidy:'15% capital subsidy',bankInBhubaneswar:'Odisha Gramya Bank, local branch',eligibility:'Retail MSMEs registered in Odisha under MSME policy'},
+      {name:'PM Mudra Yojana — Kishor',maxLoan:'₹5 Lakh',interestRate:'9%',subsidy:null,bankInBhubaneswar:'Canara Bank, Saheed Nagar',eligibility:'Existing micro businesses needing inventory expansion capital'}
+    ],
+    persona: {
+      ageRange:'28–50',
+      incomeRange:'₹30K–90K/month',
+      lifestyle:'Dual-income household, time-pressed — values proximity, quality and convenience over price',
+      currentPain:'No organized, well-stocked store within 2km — forced to travel 5+ km to malls or large markets for variety',
+      spendBehaviour:'Monthly household retail spend ₹5,000–20,000 — willing to consolidate spending at one trusted, well-stocked store',
+      currentAlternatives:'Distant malls (Big Bazaar, Reliance Smart), unorganized local kiranas, or online delivery (slow for urgent needs)'
+    },
+    suppliers: [
+      {name:'Bhubaneswar FMCG Distributor',area:'Rasulgarh Industrial Area',supplies:'FMCG brands, packaged food, household products',minOrder:'₹10,000',tip:'Negotiate 30-day credit terms from day one — essential for managing cash flow with high SKU retail inventory.'},
+      {name:'Electronics Trade Hub',area:'Laxmi Sagar Market, Bhubaneswar',supplies:'Mobile accessories, electronics, cables, gadgets',minOrder:'₹5,000',tip:'Buy branded accessories in assorted bundles — reduces decision fatigue and allows immediate shelf stocking.'},
+      {name:'Odisha Wholesale Mart',area:'Unit-1 Market, Bhubaneswar',supplies:'Household goods, kitchenware, stationery',minOrder:'₹8,000',tip:'Weekly visits on Tuesday get you first access to new stock arrivals — key for staying ahead of local kiranas.'}
+    ],
+    checklist: [
+      {task:'Trade Licence from BMC',detail:'Bhubaneswar Municipal Corporation — mandatory for all commercial retail establishments',category:'Licence'},
+      {task:'GST Registration',detail:'Register on gst.gov.in — GST number required for purchasing from distributors and formal billing',category:'Registration'},
+      {task:'Shop & Establishment Registration',detail:'Labour Department, Odisha — required within 30 days of opening the store',category:'Registration'},
+      {task:'Store Interior & Display Setup',detail:'Shelving, display units, POS counter, CCTV, signage — plan layout for high-visibility SKU placement',category:'Setup'},
+      {task:'Distributor Account Opening',detail:'Open accounts with FMCG and category distributors — requires trade licence copy and address proof',category:'Finance'},
+      {task:'Hire Sales & Store Staff',detail:'Source via Apna.co or local placement agencies — train on billing software and customer service',category:'Hiring'},
+      {task:'POS & Billing Software',detail:'Set up a POS system (Marg/Vyapar/Zoho) with barcode scanner for organized inventory management',category:'Setup'},
+      {task:'Open Current Account',detail:'Current account at SBI/HDFC with UPI QR and card swipe machine for all payment modes',category:'Finance'}
+    ],
+    rentalSpaces: [
+      {name:'Ground Floor Shop — Main Commercial Road',areaSqFt:700,type:'shop',monthlyRent:35000,walkMinutes:'1 min walk',tags:['Ground Floor','Main Road','High Footfall','Signage Space'],whyItFits:'Main road ground floor shop gets maximum walk-in visibility — critical for retail discovery and impulse purchases.',isBestMatch:true},
+      {name:'Corner Shop — Residential Junction',areaSqFt:500,type:'shop',monthlyRent:22000,walkMinutes:'3 min walk',tags:['Corner Plot','Two-Side Frontage','Residential Area','Parking'],whyItFits:'Corner double-frontage gives maximum brand visibility from two directions — strong for neighbourhood retail.',isBestMatch:false},
+      {name:'Mall Kiosk / Inline Store',areaSqFt:300,type:'shop',monthlyRent:40000,walkMinutes:'2 min walk',tags:['Mall',  'AC','Guaranteed Footfall','Late Night'],whyItFits:'Guaranteed footfall from mall shoppers — access to premium buyer segment already in shopping mindset.',isBestMatch:false},
+      {name:'First Floor Warehouse-Style Space',areaSqFt:1200,type:'warehouse',monthlyRent:18000,walkMinutes:'5 min walk',tags:['Large Space','Storage','Low Rent','Loading Dock'],whyItFits:'High storage capacity for wide inventory depth — suits a discount warehouse or bulk goods retail format.',isBestMatch:false}
+    ]
+  },
+  tech: {
+    gapScore: 71,
+    demandLevel: 'High',
+    competitorCount: 3,
+    riskLevel: 'Low',
+    title: 'IT Services & Smart Tech Gap for SMBs',
+    recommendation: 'Small and medium businesses in this locality lack reliable, professional IT support. Most run on makeshift setups — no backup, no security, no structured IT — paying ₹500–1,000 to ad hoc technicians. A branded IT services firm offering monthly retainer support, CCTV installation and device repair can build a recurring revenue base of ₹2–6L/month within 8 months.',
+    opportunities: [
+      {title:'Managed IT Support for SMBs',whyNow:'Local businesses pay ₹8,000–25,000/month for reliable IT — no organized provider exists in 4km.',description:'Monthly retainer model covering server support, data backup, cybersecurity and helpdesk. Predictable recurring income with near-zero inventory overhead once client base is established.'},
+      {title:'CCTV & Smart Security Installation',whyNow:'New residential and commercial construction is rising — every new property needs CCTV and access control.',description:'B2C and B2B CCTV, biometric access, fire alarm installation. Annual maintenance contracts (AMC) at ₹3,000–8,000/site create a recurring passive income stream alongside new installations.'},
+      {title:'Mobile & Laptop Repair Studio',whyNow:'High device density with no branded, warranty-backed repair studio within 3km.',description:'Branded repair with genuine parts and 6-month warranty builds trust. B2B contracts with offices and schools for bulk device servicing add a steady institutional revenue stream.'}
+    ],
+    startupCost: {
+      rent:{min:12000,max:28000},
+      equipment:{min:80000,max:200000},
+      staffMonthly:{min:50000,max:120000},
+      workingCapital:{min:40000,max:80000},
+      total:{min:250000,max:600000}
+    },
+    competitors: [
+      {name:'Freelance IT Technician (Ad Hoc)',rating:'3.2',strength:'Low',weakness:'No SLA, unreliable availability, no documentation, no warranty — businesses cannot depend on them for critical systems.'},
+      {name:'General Computer Shop',rating:'3.5',strength:'Low',weakness:'Only hardware sales and basic repairs — no managed IT services, no networking, no enterprise solutions.'},
+      {name:'Out-of-Area IT Company',rating:'3.8',strength:'Medium',weakness:'Long response times (4–6 hrs), high travel surcharge, no local on-site presence — cannot handle urgent issues fast.'}
+    ],
+    schemes: [
+      {name:'Startup India — DPIIT Recognition',maxLoan:'N/A (benefits scheme)',interestRate:'N/A',subsidy:'3-year tax holiday, fast-track patents',bankInBhubaneswar:'DPIIT Odisha Nodal Centre, Bhubaneswar',eligibility:'Tech startups with innovative model, <10 years old, <₹100Cr turnover'},
+      {name:'PM Mudra Yojana — Tarun',maxLoan:'₹10 Lakh',interestRate:'8.5%',subsidy:null,bankInBhubaneswar:'SBI Bhubaneswar Main Branch',eligibility:'Any Indian citizen starting/expanding a tech services business'},
+      {name:'Startup Odisha',maxLoan:'₹15 Lakh',interestRate:'0% (grant)',subsidy:'Up to ₹5L non-repayable grant',bankInBhubaneswar:'SIDBI Bhubaneswar Office',eligibility:'Odisha-based startups with innovative model, <3 years old'}
+    ],
+    persona: {
+      ageRange:'30–55 (decision-makers)',
+      incomeRange:'SMB owners: ₹50K–3L/month revenue',
+      lifestyle:'Time-pressed business owner — frustrated by IT downtime but not technically knowledgeable enough to solve it alone',
+      currentPain:'No reliable, professional IT support nearby — each IT crisis means lost business hours and scrambling for ad hoc help',
+      spendBehaviour:'Pay ₹8,000–20,000/month for reliable IT support once trust is established — see IT as infrastructure, not expense',
+      currentAlternatives:'Ad hoc freelancers via OLX, calling distant IT companies, or asking tech-savvy staff to manage IT alongside their day jobs'
+    },
+    suppliers: [
+      {name:'Bhubaneswar Computer Hardware Hub',area:'Laxmi Sagar Market, Bhubaneswar',supplies:'Laptops, desktops, networking equipment, components',minOrder:'₹5,000',tip:'Negotiate 7-day stock return policy — essential when purchasing for client-specific builds to avoid stuck inventory.'},
+      {name:'Hikvision & CP Plus Distributor Odisha',area:'Rasulgarh, Bhubaneswar',supplies:'CCTV cameras, DVRs, NVRs, access control systems',minOrder:'₹8,000',tip:'Become a registered installer partner — unlocks 20% better margin and manufacturer warranty support for your clients.'},
+      {name:'Redington India — IT Distributor',area:'Bhubaneswar Distribution Hub',supplies:'Servers, storage, networking, enterprise hardware',minOrder:'₹15,000',tip:'Apply for authorized reseller status — enables direct manufacturer pricing and post-sale technical support from Redington.'}
+    ],
+    checklist: [
+      {task:'Trade Licence from BMC',detail:'Bhubaneswar Municipal Corporation — required for operating a commercial IT services office',category:'Licence'},
+      {task:'GST Registration',detail:'Register on gst.gov.in — IT services attract 18% GST, required for B2B invoicing and input credit',category:'Registration'},
+      {task:'DPIIT Startup Registration',detail:'Apply at startupindia.gov.in — unlocks tax holidays, faster IP registration and government tender eligibility',category:'Registration'},
+      {task:'Office Setup & Tools',detail:'Server, networking, diagnostic tools, remote monitoring software (Zoho Assist, Anydesk, SolarWinds)',category:'Setup'},
+      {task:'Hire IT Engineers',detail:'Source via Naukri.com, Instahyre Bhubaneswar, or KIIT/ITER/BPUT campus placements for entry-level engineers',category:'Hiring'},
+      {task:'Build Client Retainer Contracts',detail:'Draft standard SLA agreement — offer first 30 days free audit to onboard first 5 SMB clients',category:'Setup'},
+      {task:'Business Website & Google Business Profile',detail:'Essential for local SEO — "IT support Bhubaneswar" search visibility drives 60%+ inbound leads',category:'Platform'},
+      {task:'Open Current Account',detail:'SBI/HDFC current account — needed for GST filing, TDS, client cheque acceptance and payroll',category:'Finance'}
+    ],
+    rentalSpaces: [
+      {name:'First Floor Office — Commercial Building',areaSqFt:600,type:'office',monthlyRent:16000,walkMinutes:'3 min walk',tags:['First Floor','Lift','Meeting Room','Power Backup'],whyItFits:'Professional office environment builds client trust — meeting room essential for SMB client onboarding and demos.',isBestMatch:true},
+      {name:'Co-working Space Desk — IT Hub',areaSqFt:200,type:'office',monthlyRent:8000,walkMinutes:'5 min walk',tags:['Co-working','Flexible','Networking','AC'],whyItFits:'Lowest-risk start — no long-term lease commitment while building initial client base. Scale to private office at Month 6.',isBestMatch:false},
+      {name:'Ground Floor Office + Service Bay',areaSqFt:800,type:'office',monthlyRent:22000,walkMinutes:'2 min walk',tags:['Ground Floor','Repair Bay','Walk-in Access','Signage'],whyItFits:'Ground floor with walk-in access is ideal if combining managed IT services with a repair studio — dual footfall.',isBestMatch:false},
+      {name:'Commercial Unit — SMB Cluster',areaSqFt:500,type:'office',monthlyRent:14000,walkMinutes:'4 min walk',tags:['SMB Cluster','B2B Clients Nearby','Lift'],whyItFits:'Location within an SMB-dense commercial cluster puts you next to your target clients — shortens sales cycles.',isBestMatch:false}
+    ]
+  },
+  services: {
+    gapScore: 73,
+    demandLevel: 'High',
+    competitorCount: 3,
+    riskLevel: 'Low',
+    title: 'Organized Services Gap in Growing Residential Zone',
+    recommendation: 'Rapid residential growth has outpaced available organized services. Residents rely on unorganized, unreliable service providers for laundry, repairs, car care and home maintenance. A branded, app-accessible services business with guaranteed quality and SLA can build a strong loyal subscriber base quickly.',
+    opportunities: [
+      {title:'Subscription Laundry & Dry-Clean Service',whyNow:'IT professionals and working families outsource domestic tasks — zero organized laundry brand within 4km.',description:'Pickup-drop model with app booking at ₹200–400/month subscription. 90%+ monthly retention once quality is proven. No physical store needed — operations from a back-end laundry unit.'},
+      {title:'Home Maintenance & Repair Platform',whyNow:'Rapid new construction means 500+ new households needing plumbing, electrical and carpentry.',description:'Aggregator model connecting verified plumbers, electricians and carpenters under one brand. ₹99 booking fee + service charge. Zero inventory, asset-light, scales rapidly across the locality.'},
+      {title:'Premium Car Wash & Detailing Studio',whyNow:'Rising 4-wheeler ownership — no organized, automated car wash in the locality.',description:'Subscription packages at ₹799–1,499/month for unlimited basic washes. Detailing upsells at ₹2,000–5,000 drive high-margin weekend revenue from car-enthusiast segment.'}
+    ],
+    startupCost: {
+      rent:{min:10000,max:25000},
+      equipment:{min:80000,max:200000},
+      staffMonthly:{min:40000,max:90000},
+      workingCapital:{min:40000,max:80000},
+      total:{min:200000,max:500000}
+    },
+    competitors: [
+      {name:'Ad Hoc Plumber/Electrician Network',rating:'3.1',strength:'Low',weakness:'No guarantee, unreliable availability, inconsistent pricing — zero accountability or follow-up service.'},
+      {name:'Dhobi Ghat (Traditional Laundry)',rating:'3.4',strength:'Low',weakness:'No pickup-drop, slow turnaround (3–4 days), no app booking — cannot serve time-pressed urban professionals.'},
+      {name:'Manual Car Wash Boy',rating:'3.3',strength:'Low',weakness:'Inconsistent quality, no weekly schedule, no subscription model — not a scalable or professional service.'}
+    ],
+    schemes: [
+      {name:'PM Mudra Yojana — Shishu/Kishor',maxLoan:'₹5 Lakh',interestRate:'8.5%',subsidy:null,bankInBhubaneswar:'Union Bank, Bhubaneswar',eligibility:'Any Indian citizen for micro service business startup'},
+      {name:'Startup Odisha',maxLoan:'₹15 Lakh',interestRate:'0% (grant)',subsidy:'Up to ₹5L non-repayable',bankInBhubaneswar:'SIDBI Bhubaneswar',eligibility:'Odisha startups <3 years with innovative business model'},
+      {name:'PMEGP',maxLoan:'₹25 Lakh',interestRate:'11%',subsidy:'15–35% capital subsidy',bankInBhubaneswar:'SBI, Nayapalli Branch',eligibility:'New service sector enterprises under PM Employment Generation Programme'}
+    ],
+    persona: {
+      ageRange:'25–45',
+      incomeRange:'₹30K–80K/month',
+      lifestyle:'Dual-income household or IT professional — zero time for domestic tasks, willing to pay for reliability and convenience',
+      currentPain:'Cannot find reliable, on-time service providers — every repair or laundry task requires 3 phone calls and 2 no-shows before getting done',
+      spendBehaviour:'Spend ₹2,000–6,000/month on domestic services — prioritize reliability over price once trust is established',
+      currentAlternatives:'UrbanClap/Urban Company (available but expensive and slow), word-of-mouth plumbers (unreliable), self-service (time-consuming)'
+    },
+    suppliers: [
+      {name:'Washing Machine & Dryer Supplier',area:'Mancheswar Industrial Area, Bhubaneswar',supplies:'Commercial washing machines, dryers, ironing equipment',minOrder:'₹30,000',tip:'Lease instead of buy for first 6 months — reduces upfront capital and qualifies for maintenance support from supplier.'},
+      {name:'Tools & Equipment Mart',area:'Rasulgarh Market, Bhubaneswar',supplies:'Plumbing tools, electrical equipment, carpentry tools',minOrder:'₹5,000',tip:'Build a verified technician toolkit — standardized tools ensure consistent service quality across all technicians.'},
+      {name:'Car Care Products Distributor',area:'Saheed Nagar, Bhubaneswar',supplies:'Car shampoo, wax, microfiber cloths, detailing kits',minOrder:'₹3,000',tip:'Partner with Meguiar\'s or 3M distributor for branded products — premium branding justifies 30–40% higher pricing to clients.'}
+    ],
+    checklist: [
+      {task:'Trade Licence from BMC',detail:'Bhubaneswar Municipal Corporation — required for service business registration',category:'Licence'},
+      {task:'GST Registration',detail:'gst.gov.in — services attract 18% GST. Required for B2B corporate clients and formal invoicing',category:'Registration'},
+      {task:'Shop & Establishment Registration',detail:'Labour Department, Odisha — required if employing 5+ staff',category:'Registration'},
+      {task:'Operations Setup',detail:'Service unit/back-office setup: equipment, uniforms, SOPs, technician kits',category:'Setup'},
+      {task:'Hire & Train Service Staff',detail:'Apna.co Bhubaneswar for field staff. Train on service SOP, communication and quality standards',category:'Hiring'},
+      {task:'App/Booking System',detail:'Set up WhatsApp Business, Google Business or simple booking app (Simplybook.me) for service scheduling',category:'Platform'},
+      {task:'Partner with Urban Company or Sulekha',detail:'List on Urban Company (urbancompany.com/for-professionals) for inbound lead generation while building own brand',category:'Platform'},
+      {task:'Open Current Account',detail:'SBI/HDFC — for subscription billing, service settlements and payroll',category:'Finance'}
+    ],
+    rentalSpaces: [
+      {name:'Ground Floor Utility Unit — Back Lane',areaSqFt:400,type:'warehouse',monthlyRent:10000,walkMinutes:'5 min walk',tags:['Back Lane','Low Rent','Utility Access','Storage'],whyItFits:'Low-cost back-office for laundry operations — no visibility needed, just utility access and storage space.',isBestMatch:true},
+      {name:'Compact Ground Floor Shop',areaSqFt:200,type:'shop',monthlyRent:15000,walkMinutes:'2 min walk',tags:['Ground Floor','Reception Counter','Main Road Access'],whyItFits:'Small reception desk for walk-in bookings and customer interaction — builds brand presence in the locality.',isBestMatch:false},
+      {name:'Car Wash Bay — Open Yard Space',areaSqFt:1500,type:'warehouse',monthlyRent:12000,walkMinutes:'3 min walk',tags:['Open Yard','Water Access','Drainage','Vehicle Access'],whyItFits:'Essential for car wash operations — open yard with drainage and water supply is the primary requirement.',isBestMatch:false},
+      {name:'First Floor Office for Operations Hub',areaSqFt:500,type:'office',monthlyRent:13000,walkMinutes:'4 min walk',tags:['First Floor','Operations Hub','Central Location'],whyItFits:'Low-cost base for coordinating field technicians, managing bookings and handling customer complaints.',isBestMatch:false}
+    ]
+  }
+};
+
+// Get sector-appropriate demo data based on current selection
+function getDemoData() {
+  const catKey = S.cat || 'food';
+  // Map cat keys to SECTOR_DEMO keys
+  const keyMap = {
+    food: 'food',
+    healthcare: 'healthcare',
+    education: 'education',
+    beauty: 'beauty',
+    retail: 'retail',
+    tech: 'tech',
+    services: 'services',
+    hospitality: 'food',   // fallback to food structure shape, re-labeled
+    logistics: 'services',
+    finance: 'tech',
+    real_estate: 'retail',
+    other: 'retail'
+  };
+  const demoKey = keyMap[catKey] || 'food';
+  const base = SECTOR_DEMO[demoKey];
+
+  // Deep-copy and patch locality + sector label so text matches user's selection
+  const loc = S.loc || 'Bhubaneswar';
+  const cat = S.catLabel || 'Business';
+
+  // Patch title/recommendation to include actual locality if different from demo
+  const patched = JSON.parse(JSON.stringify(base));
+  patched.title = patched.title.replace('in Student Zone', `in ${loc}`).replace('in Urban Locality', `in ${loc}`).replace('in Underserved Residential Zone', `in ${loc}`).replace('in Growing Residential Zone', `in ${loc}`).replace('for SMBs', `in ${loc}`);
+  patched.recommendation = patched.recommendation; // keep general — still accurate enough
+
+  return patched;
+}
+
+const DEMO_DATA = null; // deprecated — use getDemoData() instead
+
+// _demoRentalSpaces is sourced from getDemoData().rentalSpaces now
+
+// ══════════════════════════════════════════════════════════════
+// TOOL NAVIGATION
+// ══════════════════════════════════════════════════════════════
+function showTool(tool) {
+  const map = {cost:'pg-cost',scheme:'pg-scheme',supplier:'pg-supplier',checklist:'pg-checklist',roi:'pg-roi',rental:'pg-rental'};
+  if(map[tool]) go(map[tool]);
+}
+
+// ══════════════════════════════════════════════════════════════
+// ENHANCED buildResults — adds AI data or demo data
+// ══════════════════════════════════════════════════════════════
+let analysisData = null;
+let chatHistory = [];
+
+async function buildResultsWithAI() {
+  const anchors=getAnchors(S.loc);
+  const gap=getGapProfile(S.loc,S.catLabel,anchors);
+  const opps=buildOpps(S.loc,S.cat,gap,anchors);
+  const schemes=getSchemes(S.cat);
+  const cat=S.catLabel||'General';
+  const risk=gap.marketScore>=8.5?{l:'Low Risk',p:22,c:'var(--green)'}:gap.marketScore>=7?{l:'Moderate Risk',p:50,c:'var(--gold)'}:{l:'Elevated Risk',p:74,c:'var(--red)'};
+  const C=2*Math.PI*28;
+  const fill=(gap.marketScore/10)*C;
+  const loc=S.loc;
+
+  document.getElementById('res-loc').textContent=loc;
+  document.getElementById('res-loc-t').textContent=loc;
+  document.getElementById('resnav').textContent='📍 '+loc;
+  document.getElementById('hmap-sub').textContent=`${loc} — 5km radius`;
+
+  document.getElementById('bgh-title').textContent=gap.headline;
+  document.getElementById('bgh-sub').textContent=gap.summary;
+
+  const gapPct=gap.gapScore;
+  const gaugeCirc=2*Math.PI*42;
+  const gaugeDash=Math.round((gapPct/100)*gaugeCirc);
+  const gaugeColor=gapPct>65?'var(--green)':gapPct>45?'var(--amber)':'var(--red)';
+  const gaugeArc=document.getElementById('gauge-arc');
+  if(gaugeArc){gaugeArc.style.stroke=gaugeColor;setTimeout(()=>{gaugeArc.setAttribute('stroke-dasharray',`${gaugeDash} ${gaugeCirc}`);},300);}
+  const gaugeScore=document.getElementById('gauge-score');
+  if(gaugeScore){gaugeScore.textContent=gapPct+'%';gaugeScore.style.color=gaugeColor;}
+  document.getElementById('gap-intensity-label').textContent=gapPct>65?'Strong Market Void':gapPct>45?'Moderate Opportunity':'Tight Market';
+  document.getElementById('gap-narrative').textContent=`${cat} in ${loc} shows a ${gapPct}% gap score — meaning ${gapPct>65?'significant':'moderate'} unmet demand exists relative to current supply. ${gapPct>65?'Entry timing is ideal with low first-mover friction.':'Differentiation strategy will be key to capturing share.'}`;
+
+  const bars=[
+    {l:'Unmet Demand',v:gap.demand,c:'#18c49a'},
+    {l:'Market Growth',v:gap.growth,c:'#4f8aff'},
+    {l:'Infrastructure',v:gap.infra,c:'#9b5cff'},
+    {l:'Low Competition',v:100-gap.competition,c:'#d9a84e'},
+    {l:'Low Saturation',v:100-gap.saturation,c:'#e8943a'},
+  ];
+  document.getElementById('gap-dims').innerHTML=bars.map(b=>`<div class="gdim-row"><div class="gdim-lbl">${b.l}</div><div class="gdim-track"><div class="gdim-fill" style="width:0%;background:${b.c}" data-w="${b.v}"></div></div><div class="gdim-val">${b.v}%</div></div>`).join('');
+  setTimeout(()=>{document.querySelectorAll('.gdim-fill').forEach(el=>{el.style.width=el.dataset.w+'%';});},250);
+
+  document.getElementById('gap-metrics').innerHTML=`
+    <div class="gm"><div class="gm-val" style="color:var(--green)">${gap.gapScore}<span style="font-size:.9rem;font-weight:400">%</span></div><div class="gm-lbl">Gap Score</div><div class="gm-sub">Opportunity available</div></div>
+    <div class="gm"><div class="gm-val" style="color:var(--accent)">${gap.marketScore}<span style="font-size:.9rem;font-weight:400">/10</span></div><div class="gm-lbl">Market Score</div><div class="gm-sub">Overall attractiveness</div></div>
+    <div class="gm"><div class="gm-val" style="color:var(--gold)">${100-gap.competition}<span style="font-size:.9rem;font-weight:400">%</span></div><div class="gm-lbl">Low Competition</div><div class="gm-sub">Room to enter</div></div>
+    <div class="gm"><div class="gm-val" style="color:var(--accent2)">${gap.growth}<span style="font-size:.9rem;font-weight:400">%</span></div><div class="gm-lbl">Growth Potential</div><div class="gm-sub">5-year trajectory</div></div>
+  `;
+
+  document.getElementById('opp-count').textContent=opps.length+' Found';
+  document.getElementById('opps-list').innerHTML=opps.map((o,i)=>{
+    const badge=o.g==='high'?'badge-high':o.g==='medium'?'badge-med':'badge-low';
+    const bLabel=o.g==='high'?'High Gap':'Moderate Gap';
+    return`<div class="opp-card"><div class="opp-rank">0${i+1}</div><div class="opp-body"><div class="opp-top"><div class="opp-name">${o.n}</div><div class="opp-gap-badge ${badge}">${bLabel}</div></div><div class="opp-why">${o.w}</div>${o.a?`<div class="opp-anchor">📍 Anchor: ${o.a}</div>`:''}</div><div class="opp-meta"><div class="opp-inv-lbl">Est. Investment</div><div class="opp-inv">${o.i}</div><div class="opp-risk-dot" style="background:${o.g==='high'?'var(--green)':o.g==='medium'?'var(--gold)':'var(--red)'}"></div></div></div>`;
+  }).join('');
+
+  document.getElementById('two-col-grid').innerHTML=`
+    <div class="rc"><div class="rc-ey">Market Potential</div><div class="sr-wrap"><div class="sr"><svg width="70" height="70" viewBox="0 0 70 70"><circle cx="35" cy="35" r="28" fill="none" stroke="rgba(255,255,255,.07)" stroke-width="5"/><circle cx="35" cy="35" r="28" fill="none" stroke="var(--accent)" stroke-width="5" stroke-dasharray="${fill} ${C}" stroke-linecap="round"/></svg><div class="sr-n">${gap.marketScore}</div></div><div><div class="rc-t">${gap.marketScore>=8.5?'Excellent':gap.marketScore>=7?'Very Good':'Promising'} Market</div><div class="rc-b">${loc} shows ${gap.marketScore>=8?'strong anchor-supported':'solid'} opportunity. Primary demand: ${gap.locP&&gap.locP.type?gap.locP.type:'mixed urban'}. ${gap.locP&&gap.locP.growth?gap.locP.growth+'.':''}</div></div></div><div class="tags"><span class="tag tb">${cat}${S.sub?' › '+S.sub:''}</span><span class="tag tn">Score ${gap.marketScore}/10</span></div></div>
+    <div class="rc"><div class="rc-ey">Risk Assessment</div><div class="rc-t">${risk.l}</div><div class="rbar"><div class="rfill" style="width:0%;background:${risk.c}" data-w="${risk.p}"></div></div><div class="rc-b" style="margin-top:11px">In ${loc}, ${gap.locP&&gap.locP.footfall?'footfall is '+gap.locP.footfall.toLowerCase():'area footfall is moderate'} and income profile is ${gap.locP&&gap.locP.income?gap.locP.income.toLowerCase():'mid'}. Risk level: <strong style="color:${risk.c}">${risk.l.toLowerCase()}</strong>. ${risk.p<35?'Strong first-mover advantage available.':risk.p<55?'Differentiation is key.':'Niche targeting recommended.'}</div><div class="tags"><span class="tag ${risk.p<40?'tn':risk.p<60?'tg':'tr-tag'}">${risk.p}% Risk Index</span><span class="tag tp">5km Radius</span></div></div>
+    <div class="rc"><div class="rc-ey">Anchor Points Detected</div><div class="rc-t">Demand Generators — ${loc} (5km)</div><div class="rc-b" style="margin-bottom:10px">These anchors generate concentrated demand your <strong>${cat}</strong> business can tap into.</div><div class="anchs">${anchors.map(a=>`<div class="anch"><div class="anch-ic">${a.i}</div><div><div class="anch-n">${a.n}</div><div class="anch-t">${a.t}</div></div></div>`).join('')}</div></div>
+    <div class="rc"><div class="rc-ey">Government & Bank Schemes</div><div class="rc-t">Matched Funding Sources</div><div class="rc-b" style="margin-bottom:10px">Schemes matched to <strong>${cat}</strong> that can reduce capital requirement.</div><div class="scs">${schemes.slice(0,4).map(s=>`<div class="sc"><div class="sc-h"><div class="sc-lo">${s.lo}</div><div class="sc-nm">${s.n}</div></div><div class="sc-b">${s.b}</div><div class="sc-amt">✅ ${s.a}</div><a href="${s.lk}" target="_blank" class="sc-lk">Apply →</a></div>`).join('')}</div></div>
+  `;
+  setTimeout(()=>{document.querySelectorAll('.rfill[data-w]').forEach(el=>{el.style.width=el.dataset.w+'%';});},300);
+
+  // Get AI enriched data
+  let aiData = null;
+  if(ANTHROPIC_API_KEY !== 'YOUR_KEY_HERE') {
+    const spaceType = S.cat==='food'?'food':S.cat==='healthcare'?'clinic':S.cat==='beauty'?'studio':S.cat==='education'?'office':'shop';
+    const userPrompt = `You are BizGap, a hyperlocal business intelligence AI for Bhubaneswar, Odisha. Analyse this specific business opportunity and return ONLY valid JSON with NO generic placeholders — every field must be specific to the sector and locality provided.
+
+Sector: ${cat}
+Locality: ${loc}, Bhubaneswar, Odisha
+User Type: ${S.status==='existing'?'Existing Business Owner':'Starting Fresh'}
+Sub-category: ${S.sub||'General'}
+
+CRITICAL RULES:
+1. "competitors" must be REALISTIC ${cat} businesses near ${loc} — NOT food/restaurant names unless sector is Food & Bev
+2. "suppliers" must supply goods/services relevant to ${cat} — NOT food ingredients unless sector is Food & Bev
+3. "checklist" tasks must be the ACTUAL licences and steps required for a ${cat} business
+4. "rentalSpaces" type must match the sector: ${spaceType}
+5. ALL data must be sector-appropriate. A clinic does not compete with restaurants.
+
+Return this exact JSON structure with all fields filled correctly for ${cat} in ${loc}:
+{
+  "gapScore": ${gapPct},
+  "demandLevel": "${gapPct>75?'Very High':gapPct>60?'High':'Medium'}",
+  "competitorCount": ${Math.round((gap.competition/100)*8+2)},
+  "riskLevel": "${risk.p<35?'Low':risk.p<55?'Medium':'High'}",
+  "title": "8-word max opportunity headline for ${cat} in ${loc}",
+  "recommendation": "3 sentences. Specific to ${cat} demand in ${loc}. Include realistic numbers.",
+  "opportunities": [
+    {"title":"Specific ${cat} opportunity 1","whyNow":"1-line urgency reason specific to ${loc}","description":"2-3 lines specific to ${cat} demand in ${loc}"},
+    {"title":"Specific ${cat} opportunity 2","whyNow":"1-line urgency","description":"2-3 lines"},
+    {"title":"Specific ${cat} opportunity 3","whyNow":"1-line urgency","description":"2-3 lines"}
+  ],
+  "startupCost": {
+    "rent":{"min":20000,"max":50000},
+    "equipment":{"min":100000,"max":400000},
+    "staffMonthly":{"min":50000,"max":150000},
+    "workingCapital":{"min":60000,"max":150000},
+    "total":{"min":350000,"max":900000}
+  },
+  "competitors": [
+    {"name":"REAL ${cat} business name realistic for ${loc}","rating":"4.1","strength":"High","weakness":"specific weakness relevant to ${cat}"},
+    {"name":"REAL ${cat} business name realistic for ${loc}","rating":"3.8","strength":"Medium","weakness":"specific weakness"},
+    {"name":"REAL ${cat} business name realistic for ${loc}","rating":"3.5","strength":"Low","weakness":"specific weakness"}
+  ],
+  "schemes": [
+    {"name":"Relevant scheme for ${cat}","maxLoan":"₹10 Lakh","interestRate":"8.5%","subsidy":null,"bankInBhubaneswar":"SBI ${loc} Branch","eligibility":"who qualifies specifically"},
+    {"name":"Second relevant scheme","maxLoan":"₹25 Lakh","interestRate":"11%","subsidy":"if any","bankInBhubaneswar":"Bank name in Bhubaneswar","eligibility":"eligibility criteria"},
+    {"name":"Third scheme","maxLoan":"₹15 Lakh","interestRate":"0%","subsidy":"grant if applicable","bankInBhubaneswar":"SIDBI Bhubaneswar","eligibility":"criteria"}
+  ],
+  "persona": {
+    "ageRange":"appropriate age range for ${cat} customers",
+    "incomeRange":"income range of target customer in ${loc}",
+    "lifestyle":"lifestyle description specific to ${cat} customers in ${loc}",
+    "currentPain":"what ${cat} customers lack specifically in ${loc} today",
+    "spendBehaviour":"how ${cat} customers spend in this category",
+    "currentAlternatives":"where ${cat} customers go now in Bhubaneswar"
+  },
+  "suppliers": [
+    {"name":"Real supplier name for ${cat} in Bhubaneswar/Odisha","area":"actual area in Bhubaneswar","supplies":"what they supply specific to ${cat}","minOrder":"₹3000","tip":"practical sourcing tip"},
+    {"name":"Second supplier for ${cat}","area":"area","supplies":"supplies","minOrder":"₹2000","tip":"tip"},
+    {"name":"Third supplier for ${cat}","area":"area","supplies":"supplies","minOrder":"₹1500","tip":"tip"}
+  ],
+  "checklist": [
+    {"task":"Actual licence required for ${cat} in Bhubaneswar","detail":"exact portal or authority name","category":"Licence"},
+    {"task":"Registration step","detail":"exact portal","category":"Registration"},
+    {"task":"Another required step","detail":"detail","category":"Registration"},
+    {"task":"Finance step","detail":"detail","category":"Finance"},
+    {"task":"Setup step","detail":"detail","category":"Setup"},
+    {"task":"Platform step","detail":"detail","category":"Platform"},
+    {"task":"Hiring step","detail":"detail","category":"Hiring"},
+    {"task":"Final step","detail":"detail","category":"Finance"}
+  ],
+  "rentalSpaces": [
+    {"name":"Descriptive space name for ${cat} use","areaSqFt":600,"type":"${spaceType}","monthlyRent":28000,"walkMinutes":"3 min walk","tags":["Ground Floor","Main Road"],"whyItFits":"why this space suits a ${cat} business","isBestMatch":true},
+    {"name":"Second space option","areaSqFt":900,"type":"${spaceType}","monthlyRent":18000,"walkMinutes":"5 min walk","tags":["First Floor","Spacious"],"whyItFits":"why suitable for ${cat}","isBestMatch":false},
+    {"name":"Third option","areaSqFt":450,"type":"${spaceType}","monthlyRent":22000,"walkMinutes":"2 min walk","tags":["Near Transit","Footfall"],"whyItFits":"suitability","isBestMatch":false},
+    {"name":"Fourth option","areaSqFt":750,"type":"${spaceType}","monthlyRent":15000,"walkMinutes":"7 min walk","tags":["Residential","Quiet"],"whyItFits":"suitability","isBestMatch":false}
+  ],
+  "heatmapNodes": [],
+  "anchorPoints": ["Nearby landmark 1 in ${loc}","Nearby landmark 2","Nearby landmark 3"]
+}`;
+    aiData = await callClaude('You are BizGap, a hyperlocal business intelligence AI for Bhubaneswar, Odisha. You MUST return sector-appropriate data. NEVER show food competitors for a healthcare query, NEVER show restaurant suppliers for a salon query. Always respond with valid JSON only, no markdown fences.', userPrompt);
+  }
+  
+  const d = aiData || getDemoData();
+  analysisData = d;
+  
+  // Render new sections
+  renderCostAndCompetitors(d);
+  renderSchemesAI(d, cat);
+  renderPersonaAndSuppliers(d);
+  renderRentals(d.rentalSpaces && d.rentalSpaces.length ? d.rentalSpaces : getDemoData().rentalSpaces);
+  renderChecklist(d.checklist || [], cat);
+  initChat(d, cat, loc);
+
+  setTimeout(()=>{
+    go('pg-res');
+    setTimeout(()=>drawHeatmap(anchors,opps,gap),500);
+    toast('✅','Gap analysis complete — scroll through your insights.');
+  },600);
+}
+
+// ── RENDER: Cost & Competitors ──
+function fmt(n){return'₹'+Number(n).toLocaleString('en-IN');}
+function renderCostAndCompetitors(d) {
+  const sc = d.startupCost;
+  const costHTML = sc ? `<table class="cost-table">
+    <tr><td>🏢 Monthly Rent</td><td>${fmt(sc.rent.min)} – ${fmt(sc.rent.max)}</td></tr>
+    <tr><td>🔧 Equipment</td><td>${fmt(sc.equipment.min)} – ${fmt(sc.equipment.max)}</td></tr>
+    <tr><td>👥 Staff (monthly)</td><td>${fmt(sc.staffMonthly.min)} – ${fmt(sc.staffMonthly.max)}</td></tr>
+    <tr><td>💰 Working Capital</td><td>${fmt(sc.workingCapital.min)} – ${fmt(sc.workingCapital.max)}</td></tr>
+    <tr class="cost-total-row"><td><strong>Total Investment</strong></td><td><strong>${fmt(sc.total.min)} – ${fmt(sc.total.max)}</strong></td></tr>
+  </table>` : '<div class="rc-b">No cost data available.</div>';
+
+  const compHTML = (d.competitors||[]).map(c=>{
+    const sc=c.strength==='High'?'var(--red)':c.strength==='Medium'?'var(--gold)':'var(--green)';
+    return`<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--b1)">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+        <div style="font-weight:600;font-size:.88rem">${c.name}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="color:var(--gold);font-size:.8rem">⭐ ${c.rating}</span>
+          <span style="padding:2px 9px;border-radius:999px;font-size:.65rem;font-weight:700;background:rgba(${c.strength==='High'?'240,82,82':c.strength==='Medium'?'217,168,78':'24,196,154'},.1);color:${sc};border:1px solid ${sc}40;font-family:var(--ui)">${c.strength}</span>
+        </div>
+      </div>
+      <div style="font-size:.76rem;color:var(--muted)">⚠️ ${c.weakness}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('cost-table-wrap').innerHTML = costHTML;
+  document.getElementById('competitors-wrap').innerHTML = compHTML;
+  document.getElementById('sec-cost-comp').style.display='block';
+}
+
+// ── RENDER: AI Schemes ──
+function renderSchemesAI(d, cat) {
+  document.getElementById('schemes-sector-label').textContent = cat;
+  const html = (d.schemes||[]).map(s=>`
+    <div class="scheme-card">
+      <div class="scheme-name">${s.name}</div>
+      <div class="scheme-meta">${s.eligibility}</div>
+      <div style="margin-top:8px">
+        <span class="scheme-tag">Max: ${s.maxLoan}</span>
+        <span class="scheme-tag">Rate: ${s.interestRate}</span>
+        ${s.subsidy?`<span class="scheme-tag">Subsidy: ${s.subsidy}</span>`:''}
+        <span class="scheme-tag">📍 ${s.bankInBhubaneswar}</span>
+      </div>
+    </div>`).join('');
+  document.getElementById('schemes-ai-wrap').innerHTML = html;
+  document.getElementById('sec-schemes-ai').style.display='block';
+}
+
+// ── RENDER: Persona & Suppliers ──
+function renderPersonaAndSuppliers(d) {
+  const p = d.persona || {};
+  const pgrid = [
+    {l:'Age Range',v:p.ageRange||'22-35'},
+    {l:'Income Range',v:p.incomeRange||'₹25K–60K/mo'},
+    {l:'Lifestyle',v:p.lifestyle||'Urban professional'},
+    {l:'Current Pain',v:p.currentPain||'Lack of quality options'},
+    {l:'Spend Behaviour',v:p.spendBehaviour||'App-first, value-conscious'},
+    {l:'Current Alternatives',v:p.currentAlternatives||'Distant options'}
+  ];
+  document.getElementById('persona-grid').innerHTML = pgrid.map(c=>`<div class="persona-cell"><div class="persona-cell-lbl">${c.l}</div><div class="persona-cell-val">${c.v}</div></div>`).join('');
+
+  const supHTML = (d.suppliers||[]).map(s=>`
+    <div class="supplier-card">
+      <div class="supplier-name">${s.name}</div>
+      <div class="supplier-meta">📍 ${s.area} · Min Order: ${s.minOrder}</div>
+      <div><span class="supply-badge">${s.supplies}</span></div>
+      <div class="supplier-tip">💡 ${s.tip}</div>
+    </div>`).join('');
+  document.getElementById('suppliers-wrap').innerHTML = supHTML;
+  document.getElementById('sec-persona-supplier').style.display='block';
+}
+
+// ── RENDER: Rentals ──
+let allRentals = [];
+function renderRentals(spaces) {
+  allRentals = spaces;
+  document.getElementById('rental-sub-text').textContent = `Based on your gap analysis for ${S.loc}, here are commercial spaces matching your sector.`;
+  renderRentalCards(spaces);
+  document.getElementById('sec-rentals').style.display='block';
+}
+
+function renderRentalCards(spaces) {
+  if(!spaces.length){document.getElementById('rentals-wrap').innerHTML='<div class="rc-b" style="padding:16px">No rental spaces found for the current filters.</div>';return;}
+  document.getElementById('rentals-wrap').innerHTML = spaces.map(s=>`
+    <div class="rental-card ${s.isBestMatch?'best-match':''}">
+      <div class="rental-card-left">
+        ${s.isBestMatch?'<div class="best-match-badge">⭐ Best Match</div>':''}
+        <div class="rental-name">${s.name}</div>
+        <div class="rental-meta">${s.areaSqFt} sqft · ${s.walkMinutes}</div>
+        <div class="rental-tags">${(s.tags||[]).map(t=>`<span class="rental-tag">${t}</span>`).join('')}</div>
+        <div class="rental-why">▸ ${s.whyItFits}</div>
+      </div>
+      <div>
+        <div class="rental-price">${fmt(s.monthlyRent)}</div>
+        <div class="rental-price-lbl">per month</div>
+      </div>
+    </div>`).join('');
+}
+
+function filterRentals(type, btn) {
+  document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const budget = parseInt(document.getElementById('rental-budget-filter').value)||Infinity;
+  const area = parseInt(document.getElementById('rental-area-filter').value)||0;
+  const filtered = allRentals.filter(s=>{
+    if(type!=='all' && s.type!==type) return false;
+    if(s.monthlyRent > budget) return false;
+    if(s.areaSqFt < area) return false;
+    return true;
+  });
+  renderRentalCards(filtered);
+}
+
+async function refineRentals() {
+  const budget = document.getElementById('rental-budget-filter').value;
+  const area = document.getElementById('rental-area-filter').value;
+  const typeBtn = document.querySelector('.type-btn.active');
+  const spaceType = typeBtn ? typeBtn.textContent.replace(/[^\w\s]/g,'').trim().split(' ')[0] : 'All';
+  
+  if(ANTHROPIC_API_KEY === 'YOUR_KEY_HERE') {
+    filterRentals(spaceType.toLowerCase()==='all'?'all':spaceType.toLowerCase(), document.querySelector('.type-btn.active'));
+    return;
+  }
+  
+  document.getElementById('rentals-wrap').innerHTML = '<div class="tool-spinner"><div class="msp"></div> Searching rental market…</div>';
+  const result = await callClaude(
+    'You are a commercial real estate expert for Bhubaneswar, Odisha. Return only valid JSON.',
+    `Find commercial rental spaces for a ${S.catLabel} business in ${S.loc}, Bhubaneswar. Budget: ₹${budget||'any'}/month, Min area: ${area||'any'} sqft, Type: ${spaceType}. Return JSON: {"rentalSpaces":[{"name":"desc","areaSqFt":400,"type":"shop","monthlyRent":25000,"walkMinutes":"3 min walk","tags":["Ground Floor"],"whyItFits":"reason","isBestMatch":true}]} with 4 listings.`
+  );
+  if(result && result.rentalSpaces) {
+    allRentals = result.rentalSpaces;
+    renderRentalCards(result.rentalSpaces);
+  } else {
+    filterRentals('all', document.querySelector('.type-btn.active'));
+  }
+}
+
+// ── RENDER: Checklist ──
+function renderChecklist(items, cat) {
+  document.getElementById('checklist-title').textContent = `✅ Launch Checklist — ${cat}`;
+  const container = document.getElementById('checklist-items');
+  let checked = 0;
+  const total = items.length;
+  
+  container.innerHTML = items.map((item,i)=>`
+    <div class="check-item" id="ci-${i}" onclick="toggleCheck(${i},${total})">
+      <div class="check-box" id="cb-${i}"><svg id="cv-${i}" width="12" height="12" viewBox="0 0 12 12" fill="none" style="display:none"><polyline points="2,6 5,9 10,3" stroke="#04080f" stroke-width="2" stroke-linecap="round"/></svg></div>
+      <div>
+        <div class="check-task">${item.task}<span class="check-cat-badge">${item.category}</span></div>
+        <div class="check-detail">${item.detail}</div>
+      </div>
+    </div>`).join('');
+  
+  updateChecklistProgress(0, total);
+  document.getElementById('sec-checklist').style.display='block';
+}
+
+function toggleCheck(i, total) {
+  const item = document.getElementById('ci-'+i);
+  const chk = document.getElementById('cv-'+i);
+  item.classList.toggle('checked');
+  chk.style.display = item.classList.contains('checked')?'block':'none';
+  const done = document.querySelectorAll('.check-item.checked').length;
+  updateChecklistProgress(done, total);
+}
+
+function updateChecklistProgress(done, total) {
+  const pct = total>0?Math.round((done/total)*100):0;
+  document.getElementById('checklist-bar').style.width = pct+'%';
+  document.getElementById('checklist-counter').textContent = `${done} / ${total} completed`;
+}
+
+// ── ROI SIMULATOR ──
+function calcROI(investId, revId, costId, scenId, resultId) {
+  const inv = parseFloat(document.getElementById(investId).value)||0;
+  const rev = parseFloat(document.getElementById(revId).value)||0;
+  const costs = parseFloat(document.getElementById(costId).value)||0;
+  const scen = document.getElementById(scenId).value;
+  if(!inv||!rev||!costs){document.getElementById(resultId).innerHTML='<div class="err-card">Please fill in all fields.</div>';return;}
+  const mult = scen==='optimistic'?1.2:scen==='pessimistic'?0.8:1.0;
+  const adjRev = rev*mult;
+  const monthlyProfit = adjRev-costs;
+  const breakEven = monthlyProfit>0?Math.ceil(inv/monthlyProfit):null;
+  const yr1Net = (adjRev*12)-(costs*12)-inv;
+  const yr2Net = (adjRev*12)-(costs*12);
+  const roi1 = inv>0?((yr1Net/inv)*100).toFixed(1):0;
+  const roi2 = inv>0?((yr2Net/inv)*100).toFixed(1):0;
+  
+  const cls=(v)=>v>0?'roi-pos':v<0?'roi-neg':'roi-neutral';
+  document.getElementById(resultId).innerHTML=`
+    <div style="margin-top:16px;padding:16px;background:var(--s2);border:1px solid var(--b1);border-radius:10px">
+      <div style="font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;font-weight:600;font-family:var(--ui)">${scen.toUpperCase()} SCENARIO RESULTS</div>
+      <table class="roi-result-table">
+        <tr><td>Adjusted Monthly Revenue</td><td class="${cls(adjRev)}">${fmt(adjRev)}</td></tr>
+        <tr><td>Monthly Profit/Loss</td><td class="${cls(monthlyProfit)}">${fmt(monthlyProfit)}</td></tr>
+        <tr><td>Break-Even Month</td><td class="${breakEven?'roi-neutral':'roi-neg'}">${breakEven?'Month '+breakEven:'Not profitable'}</td></tr>
+        <tr><td>Year 1 Net (after recovery)</td><td class="${cls(yr1Net)}">${fmt(yr1Net)}</td></tr>
+        <tr><td>Year 2 Net</td><td class="${cls(yr2Net)}">${fmt(yr2Net)}</td></tr>
+        <tr><td>Year 1 ROI</td><td class="${cls(parseFloat(roi1))}">${roi1}%</td></tr>
+        <tr><td>Year 2 ROI</td><td class="${cls(parseFloat(roi2))}">${roi2}%</td></tr>
+      </table>
+    </div>`;
+}
+
+// ── AI CHAT ──
+function initChat(d, cat, loc) {
+  chatHistory = [];
+  const intro = `Hi! I've completed the gap analysis for ${cat} in ${loc}. Gap Score: ${d.gapScore}/100. ${(d.recommendation||'').split('.')[0]}. What would you like to know?`;
+  chatHistory.push({role:'assistant', content: intro});
+  const hist = document.getElementById('chat-history');
+  hist.innerHTML = `<div class="chat-bubble-ai">${intro}</div>`;
+  document.getElementById('chat-sub').textContent = `Context-aware for ${cat} in ${loc}. Ask anything about your market.`;
+  document.getElementById('sec-chat').style.display='block';
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value='';
+  
+  const hist = document.getElementById('chat-history');
+  hist.innerHTML += `<div class="chat-bubble-user">${msg}</div>`;
+  chatHistory.push({role:'user', content: msg});
+  hist.scrollTop = hist.scrollHeight;
+  
+  document.getElementById('chat-typing').style.display='block';
+  
+  const d = analysisData || getDemoData();
+  const sysPrompt = `You are BizGap AI, a hyperlocal business advisor for Bhubaneswar. The user's analysis: Sector: ${S.catLabel}, Locality: ${S.loc}, Gap Score: ${d.gapScore}, Demand: ${d.demandLevel}, Risk: ${d.riskLevel}, Recommendation: ${d.recommendation}, Opportunities: ${(d.opportunities||[]).map(o=>o.title).join(', ')}. Answer concisely and practically. Use INR. Reference Bhubaneswar-specific facts.`;
+  
+  const reply = await callClaudeChat(sysPrompt, chatHistory);
+  document.getElementById('chat-typing').style.display='none';
+  chatHistory.push({role:'assistant', content: reply});
+  hist.innerHTML += `<div class="chat-bubble-ai">${reply.replace(/\n/g,'<br>')}</div>`;
+  hist.scrollTop = hist.scrollHeight;
+}
+
+// ══════════════════════════════════════════════════════════════
+// STANDALONE TOOL FUNCTIONS
+// ══════════════════════════════════════════════════════════════
+
+async function runCostEstimator() {
+  const sector = document.getElementById('ce-sector').value;
+  const locality = document.getElementById('ce-locality').value;
+  const size = document.getElementById('ce-size').value;
+  if(!sector||!locality){document.getElementById('ce-result').innerHTML='<div class="err-card">Please select sector and locality.</div>';return;}
+  
+  document.getElementById('ce-result').innerHTML='<div class="tool-spinner"><div class="msp"></div> Calculating costs…</div>';
+  
+  const sizeLabels={small:'1-3 staff',medium:'4-10 staff',large:'10+ staff'};
+  let sc = null;
+  if(ANTHROPIC_API_KEY !== 'YOUR_KEY_HERE') {
+    sc = await callClaude(
+      'You are BizGap, a hyperlocal business intelligence AI for Bhubaneswar, Odisha. Always respond with valid JSON only, no markdown fences.',
+      `Return startup cost estimate for a ${sector} business (${sizeLabels[size]}) in ${locality}, Bhubaneswar. Return JSON: {"startupCost":{"rent":{"min":15000,"max":40000},"equipment":{"min":100000,"max":300000},"staffMonthly":{"min":40000,"max":100000},"workingCapital":{"min":50000,"max":150000},"total":{"min":300000,"max":800000}}}`
+    );
+  }
+  const data = (sc&&sc.startupCost) ? sc.startupCost : getDemoData().startupCost;
+  document.getElementById('ce-result').innerHTML=`
+    <div style="margin-top:16px">
+      <div style="font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;font-weight:600;font-family:var(--ui)">COST BREAKDOWN — ${sector.toUpperCase()} IN ${locality.toUpperCase()}</div>
+      <table class="cost-table">
+        <tr><td>🏢 Monthly Rent</td><td>${fmt(data.rent.min)} – ${fmt(data.rent.max)}</td></tr>
+        <tr><td>🔧 Equipment & Fixtures</td><td>${fmt(data.equipment.min)} – ${fmt(data.equipment.max)}</td></tr>
+        <tr><td>👥 Staff (monthly)</td><td>${fmt(data.staffMonthly.min)} – ${fmt(data.staffMonthly.max)}</td></tr>
+        <tr><td>💰 Working Capital (3mo)</td><td>${fmt(data.workingCapital.min)} – ${fmt(data.workingCapital.max)}</td></tr>
+        <tr class="cost-total-row"><td><strong>Total Investment Required</strong></td><td><strong>${fmt(data.total.min)} – ${fmt(data.total.max)}</strong></td></tr>
+      </table>
+    </div>`;
+}
+
+async function runSchemeMatcher() {
+  const sector = document.getElementById('sm-sector').value;
+  const invest = document.getElementById('sm-invest').value;
+  const status = document.getElementById('sm-status').value;
+  const cat = document.getElementById('sm-category').value;
+  if(!sector){document.getElementById('sm-result').innerHTML='<div class="err-card">Please select a sector.</div>';return;}
+  
+  document.getElementById('sm-result').innerHTML='<div class="tool-spinner"><div class="msp"></div> Matching schemes…</div>';
+  
+  let data = null;
+  if(ANTHROPIC_API_KEY !== 'YOUR_KEY_HERE') {
+    data = await callClaude(
+      'You are BizGap, a hyperlocal business intelligence AI for Bhubaneswar, Odisha. Always respond with valid JSON only, no markdown fences.',
+      `Match government schemes for: Sector: ${sector}, Investment: ${invest}, Status: ${status}, Applicant: ${cat}. Return JSON: {"schemes":[{"name":"scheme name","maxLoan":"amt","interestRate":"X%","subsidy":"if any or null","bankInBhubaneswar":"branch name","eligibility":"1 line","howToApply":"portal URL or office name"}]} with 4 schemes.`
+    );
+  }
+  const schemes = (data&&data.schemes) ? data.schemes : getDemoData().schemes.map(s=>({...s,howToApply:'Apply at nearest SBI/Canara Bank branch or mudra.org.in'}));
+  document.getElementById('sm-result').innerHTML = schemes.map(s=>`
+    <div class="scheme-card">
+      <div class="scheme-name">${s.name}</div>
+      <div class="scheme-meta">${s.eligibility}</div>
+      <div style="margin-top:8px">
+        <span class="scheme-tag">Max: ${s.maxLoan}</span>
+        <span class="scheme-tag">Rate: ${s.interestRate}</span>
+        ${s.subsidy?`<span class="scheme-tag">Subsidy: ${s.subsidy}</span>`:''}
+        <span class="scheme-tag">📍 ${s.bankInBhubaneswar}</span>
+      </div>
+      ${s.howToApply?`<div style="margin-top:8px;font-size:.76rem;color:var(--accent)">🔗 Apply: ${s.howToApply}</div>`:''}
+    </div>`).join('');
+}
+
+async function runSupplierFinder() {
+  const sector = document.getElementById('sf-sector').value;
+  const need = document.getElementById('sf-need').value;
+  if(!sector){document.getElementById('sf-result').innerHTML='<div class="err-card">Please select a sector.</div>';return;}
+  
+  document.getElementById('sf-result').innerHTML='<div class="tool-spinner"><div class="msp"></div> Finding suppliers…</div>';
+  
+  let data = null;
+  if(ANTHROPIC_API_KEY !== 'YOUR_KEY_HERE') {
+    data = await callClaude(
+      'You are BizGap, a hyperlocal business intelligence AI for Bhubaneswar, Odisha. Always respond with valid JSON only, no markdown fences.',
+      `Find local suppliers for a ${sector} business in Bhubaneswar${need?' needing: '+need:''}. Return JSON: {"suppliers":[{"name":"name","area":"area in Bhubaneswar/Odisha","supplies":"what","minOrder":"INR amount","tip":"1 line tip"}]} with 5 suppliers.`
+    );
+  }
+  const suppliers = (data&&data.suppliers) ? data.suppliers : getDemoData().suppliers;
+  document.getElementById('sf-result').innerHTML = suppliers.map(s=>`
+    <div class="supplier-card">
+      <div class="supplier-name">${s.name}</div>
+      <div class="supplier-meta">📍 ${s.area} · Min Order: ${s.minOrder}</div>
+      <span class="supply-badge">${s.supplies}</span>
+      <div class="supplier-tip">💡 ${s.tip}</div>
+    </div>`).join('');
+}
+
+async function runChecklistGenerator() {
+  const sector = document.getElementById('cl-sector').value;
+  const structure = document.getElementById('cl-structure').value;
+  if(!sector){document.getElementById('cl-result').innerHTML='<div class="err-card">Please select a sector.</div>';return;}
+  
+  document.getElementById('cl-result').innerHTML='<div class="tool-spinner"><div class="msp"></div> Generating checklist…</div>';
+  
+  let data = null;
+  if(ANTHROPIC_API_KEY !== 'YOUR_KEY_HERE') {
+    data = await callClaude(
+      'You are BizGap, a hyperlocal business intelligence AI for Bhubaneswar, Odisha. Always respond with valid JSON only, no markdown fences.',
+      `Generate a launch checklist for a ${sector} business (${structure}) in Bhubaneswar. Return JSON: {"checklist":[{"task":"task name","detail":"authority/portal/action","category":"Licence|Registration|Setup|Platform|Hiring|Finance"}]} with 12 items.`
+    );
+  }
+  const items = (data&&data.checklist) ? data.checklist : getDemoData().checklist;
+  
+  let checkStates = new Array(items.length).fill(false);
+  function updateBar() {
+    const done = checkStates.filter(Boolean).length;
+    const pct = items.length>0?Math.round((done/items.length)*100):0;
+    document.getElementById('cl-bar').style.width=pct+'%';
+    document.getElementById('cl-ctr').textContent=`${done} / ${items.length} completed`;
+  }
+  
+  document.getElementById('cl-result').innerHTML=`
+    <div style="margin-top:16px">
+      <div class="checklist-bar-wrap"><div class="checklist-bar-fill" id="cl-bar" style="width:0%"></div></div>
+      <div class="checklist-counter" id="cl-ctr">0 / ${items.length} completed</div>
+      <div id="cl-items">${items.map((item,i)=>`
+        <div class="check-item" id="scl-${i}" onclick="(function(){checkStates[${i}]=!checkStates[${i}];document.getElementById('scl-${i}').classList.toggle('checked');document.getElementById('scl-cv-${i}').style.display=checkStates[${i}]?'block':'none';updateBar();})()">
+          <div class="check-box"><svg id="scl-cv-${i}" width="12" height="12" viewBox="0 0 12 12" fill="none" style="display:none"><polyline points="2,6 5,9 10,3" stroke="#04080f" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <div><div class="check-task">${item.task}<span class="check-cat-badge">${item.category}</span></div><div class="check-detail">${item.detail}</div></div>
+        </div>`).join('')}</div>
+    </div>`;
+  
+  // make updateBar accessible in onclick context
+  window.updateBar = updateBar;
+  window.checkStates = checkStates;
+}
+
+async function runRentalFinder() {
+  const locality = document.getElementById('rf-locality').value;
+  const bizType = document.getElementById('rf-biztype').value;
+  const budget = document.getElementById('rf-budget').value;
+  const area = document.getElementById('rf-area').value;
+  const floor = document.getElementById('rf-floor').value;
+  const parking = document.getElementById('rf-parking').value;
+  if(!locality){document.getElementById('rf-result').innerHTML='<div class="err-card">Please select a locality.</div>';return;}
+  
+  document.getElementById('rf-result').innerHTML='<div class="tool-spinner"><div class="msp"></div> Scanning rental market…</div>';
+  
+  let data = null;
+  if(ANTHROPIC_API_KEY !== 'YOUR_KEY_HERE') {
+    data = await callClaude(
+      'You are a commercial real estate expert for Bhubaneswar, Odisha. Return only valid JSON.',
+      `Find commercial rental spaces for a ${bizType} in ${locality}, Bhubaneswar. Budget: ₹${budget||'any'}/month, Min area: ${area||'any'} sqft, Floor: ${floor}, Parking: ${parking}. Return JSON: {"spaces":[{"name":"desc","areaSqFt":400,"type":"shop","monthlyRent":25000,"walkMinutes":"3 min walk","tags":["Ground Floor"],"whyItFits":"reason","isBestMatch":true}]} with 5-6 listings.`
+    );
+  }
+  const spaces = (data&&data.spaces) ? data.spaces : getDemoData().rentalSpaces;
+  document.getElementById('rf-result').innerHTML = spaces.map(s=>`
+    <div class="rental-card ${s.isBestMatch?'best-match':''}">
+      <div class="rental-card-left">
+        ${s.isBestMatch?'<div class="best-match-badge">⭐ Best Match</div>':''}
+        <div class="rental-name">${s.name}</div>
+        <div class="rental-meta">${s.areaSqFt} sqft · ${s.walkMinutes}</div>
+        <div class="rental-tags">${(s.tags||[]).map(t=>`<span class="rental-tag">${t}</span>`).join('')}</div>
+        <div class="rental-why">▸ ${s.whyItFits}</div>
+      </div>
+      <div><div class="rental-price">${fmt(s.monthlyRent)}</div><div class="rental-price-lbl">per month</div></div>
+    </div>`).join('')+`<div class="rental-foot">💡 Rental estimates are AI-generated based on current Bhubaneswar market data. Verify directly with owners.</div>`;
+}
+
+// Override buildResults to use AI version
+function buildResults() {
+  buildResultsWithAI();
 }
 </script>
 </body>
