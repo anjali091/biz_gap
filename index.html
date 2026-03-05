@@ -5747,7 +5747,7 @@ const LOC_DB = {
     }
   },
   'IRC Village': {
-    anchors:[{n:'Indian Red Cross Society (IRC)',t:'Humanitarian Hub',i:'🏥'},{n:'SUM Hospital (0.8km)',t:'Hospital Proximity',i:'🏥'},{n:'IRC Village Market',t:'Commercial Strip',i:'🏬'},{n:'Multiple Housing Societies',t:'Premium Residential',i:'🏘️'},{n:'Kalinga Stadium (1km)',t:'Sports Venue',i:'🏟️'}],
+    anchors:[{n:'Indian Red Cross Society (IRC)',t:'Humanitarian Hub',i:'🏥'},{n:'Capital Hospital (1.3km)',t:'Government Hospital',i:'🏥'},{n:'IRC Village Market',t:'Commercial Strip',i:'🏬'},{n:'Multiple Housing Societies',t:'Premium Residential',i:'🏘️'},{n:'Kalinga Stadium (1km)',t:'Sports Venue',i:'🏟️'}],
     profile:{pop:'~65,000',growth:'Premium residential near stadium & hospital belt',income:'Upper-middle',type:'Doctors + Professionals + Sports Community',newConstruction:false,footfall:'Moderate-High'},
     catBias:{food:{demand:80,competition:60,saturation:54,growth:68,infra:76},healthcare:{demand:86,competition:44,saturation:36,growth:80,infra:80},beauty:{demand:84,competition:50,saturation:42,growth:76,infra:76},services:{demand:78,competition:52,saturation:44,growth:70,infra:74},education:{demand:78,competition:48,saturation:40,growth:74,infra:74},hospitality:{demand:80,competition:52,saturation:44,growth:74,infra:76}}
   },
@@ -5811,8 +5811,9 @@ const LOC_DB = {
       {n:'Khandagiri & Udaygiri Caves (ASI Heritage & Tourist Site)',t:'Heritage Tourist Site',i:'🗿'},
       {n:'ITER — Siksha O Anusandhan University Campus (1.5km)',t:'Engineering College',i:'🎓'},
       {n:'Khandagiri Square Commercial Hub',t:'Commercial Hub',i:'🏬'},
-      {n:'Capital Hospital (2km via Nayapalli)',t:'Government Hospital',i:'🏥'},
-      {n:'Jain Temple Cluster & Pilgrimage Circuit',t:'Religious Site',i:'⛩️'}
+      {n:'Jain Temple Cluster & Pilgrimage Circuit',t:'Religious Site',i:'⛩️'},
+      {n:'Biju Patnaik International Airport (4km)',t:'Airport',i:'✈️'},
+      {n:'NH-16 Highway Junction & Baramunda Bus Stand',t:'Transit Hub',i:'🚌'}
     ],
     profile:{pop:'~80,000 + daily tourist & pilgrim footfall',growth:'Heritage tourism zone with strong college & residential base',income:'Mid',type:'Residents + College Students + Domestic Tourists + Pilgrims',newConstruction:false,footfall:'High (tourist + student)'},
     catBias:{
@@ -5876,6 +5877,96 @@ function getExtraAnchors(loc){
   return extras;
 }
 
+// ══════════════════════════════════════════════════════════
+// HAVERSINE DISTANCE (km) — used for 5km anchor filtering
+// ══════════════════════════════════════════════════════════
+function haversineKm(lat1,lng1,lat2,lng2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
+  const a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+// ══════════════════════════════════════════════════════════
+// ANCHOR COORDINATES — real lat/lng for distance filtering
+// ══════════════════════════════════════════════════════════
+const ANCHOR_COORDS={
+  // Hospitals
+  'AIIMS Bhubaneswar':                    {lat:20.3423,lng:85.7898},
+  'SUM Hospital':                         {lat:20.3589,lng:85.7898},
+  'Capital Hospital':                     {lat:20.2743,lng:85.8342},
+  // Universities & Colleges
+  'ITER':                                 {lat:20.2942,lng:85.7815},
+  'KIIT University':                      {lat:20.3567,lng:85.7756},
+  'KISS University':                      {lat:20.3656,lng:85.7734},
+  'KISS Campus':                          {lat:20.3656,lng:85.7734},
+  'OUTR':                                 {lat:20.3437,lng:85.8239},
+  'Utkal University':                     {lat:20.2990,lng:85.8290},
+  'XIM University':                       {lat:20.2934,lng:85.8445},
+  'IIT Bhubaneswar':                      {lat:20.1485,lng:85.6740},
+  'NISER Campus':                         {lat:20.1503,lng:85.6740},
+  'IIIT Bhubaneswar':                     {lat:20.3589,lng:85.8098},
+  'Infosys Campus':                       {lat:20.3443,lng:85.7998},
+  // IT Parks
+  'Infocity IT Park':                     {lat:20.3443,lng:85.7998},
+  // Transport hubs
+  'Biju Patnaik International Airport':   {lat:20.2556,lng:85.7567},
+  'Bhubaneswar Railway Station':          {lat:20.2679,lng:85.8446},
+  'Baramunda Bus Stand':                  {lat:20.2656,lng:85.8123},
+  // Malls
+  'DN Regalia Mall':                      {lat:20.3512,lng:85.8078},
+  'Esplanade Mall':                       {lat:20.2712,lng:85.8380},
+  // Heritage / Religious
+  'Khandagiri & Udaygiri Caves':          {lat:20.2523,lng:85.7878},
+  'Khandagiri Caves Tourism':             {lat:20.2523,lng:85.7878},
+  'Udaygiri Caves Tourism':               {lat:20.2523,lng:85.7878},
+  'Jain Temple Cluster':                  {lat:20.2519,lng:85.7862},
+  'Lingaraj Temple':                      {lat:20.2390,lng:85.8358},
+  'ISKCON Temple':                        {lat:20.3512,lng:85.7956},
+  // Stadiums
+  'Kalinga Stadium':                      {lat:20.2823,lng:85.8200},
+};
+
+// ══════════════════════════════════════════════════════════
+// LOCATION COORDINATES (same as locCoords used elsewhere)
+// ══════════════════════════════════════════════════════════
+const LOC_COORDS_FOR_FILTER={
+  'Patia':{lat:20.3521,lng:85.8195},'Chandrasekharpur':{lat:20.3437,lng:85.8239},
+  'Jaydev Vihar':{lat:20.3376,lng:85.8292},'Damana':{lat:20.3589,lng:85.8098},
+  'Infocity':{lat:20.3443,lng:85.7998},'KIIT Area':{lat:20.3567,lng:85.7756},
+  'KISS Area':{lat:20.3656,lng:85.7734},'Niladri Vihar':{lat:20.3498,lng:85.8178},
+  'Dumduma':{lat:20.3289,lng:85.7934},'Aiginia':{lat:20.3189,lng:85.7712},
+  'Tamando':{lat:20.2956,lng:85.7645},'Nayapalli':{lat:20.2898,lng:85.8234},
+  'IRC Village':{lat:20.2856,lng:85.8298},'Saheed Nagar':{lat:20.2934,lng:85.8445},
+  'Kharavela Nagar':{lat:20.2712,lng:85.8456},'Acharya Vihar':{lat:20.2956,lng:85.8378},
+  'Vani Vihar':{lat:20.2989,lng:85.8334},'Rasulgarh':{lat:20.2723,lng:85.8656},
+  'Mancheswar':{lat:20.2656,lng:85.8567},'Kalinga Nagar':{lat:20.2823,lng:85.8612},
+  'Bomikhal':{lat:20.2756,lng:85.8523},'Pokhariput':{lat:20.2456,lng:85.8234},
+  'Baramunda':{lat:20.2656,lng:85.8123},'Khandagiri':{lat:20.2523,lng:85.7934},
+  'Airport Area':{lat:20.2556,lng:85.7567},'Railway Station Area':{lat:20.2679,lng:85.8446},
+  'AIIMS Bhubaneswar':{lat:20.3423,lng:85.7898},'SUM Hospital Area':{lat:20.3589,lng:85.7898},
+  'Old Town':{lat:20.2356,lng:85.8298},'Lingaraj Area':{lat:20.2412,lng:85.8356},
+};
+
+// ══════════════════════════════════════════════════════════
+// FILTER ANCHORS TO 5km RADIUS — checks named anchor coords
+// Anchors without coords in ANCHOR_COORDS are kept only if
+// they appear to be local/generic (no specific city landmark)
+// ══════════════════════════════════════════════════════════
+function filterAnchorsByDistance(anchors, loc, maxKm){
+  maxKm = maxKm || 5;
+  const locC = LOC_COORDS_FOR_FILTER[loc] || {lat:20.2960, lng:85.8245};
+  return anchors.filter(function(a){
+    // Check against ANCHOR_COORDS by trying partial name matches
+    const nameKey = Object.keys(ANCHOR_COORDS).find(function(k){
+      return a.n.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(a.n.toLowerCase().substring(0,10));
+    });
+    if(!nameKey) return true; // No coords → local/generic anchor, keep it
+    const ac = ANCHOR_COORDS[nameKey];
+    const dist = haversineKm(locC.lat, locC.lng, ac.lat, ac.lng);
+    return dist <= maxKm;
+  });
+}
+
 function getAnchors(loc){
   const cat=(S.cat||'food');
   const csvLoc=CSV_DATA[loc]||CSV_DATA[loc.replace(' Area','')]||null;
@@ -5916,7 +6007,8 @@ function getAnchors(loc){
     const locAnchors=db?db.anchors:[];
     const seen=new Set(foodAnchors.map(a=>a.n.toLowerCase().substring(0,6)));
     const extra=locAnchors.filter(a=>!seen.has(a.n.toLowerCase().substring(0,6)));
-    return [...foodAnchors,...extra].slice(0,7);
+    const merged=[...foodAnchors,...extra];
+    return filterAnchorsByDistance(merged, loc, 5).slice(0,7);
   }
 
   // Merge with LOC_DB anchors (LOC_DB has richer local detail)
@@ -5926,7 +6018,9 @@ function getAnchors(loc){
   // Combine: LOC_DB anchors first (richer), then CSV anchors not already represented
   const seen=new Set(locAnchors.map(a=>a.n.toLowerCase().substring(0,8)));
   const extra=csvAnchors.filter(a=>!seen.has(a.n.toLowerCase().substring(0,8)));
-  return [...locAnchors,...extra].slice(0,7);
+  const merged=[...locAnchors,...extra];
+  // ── 5km DISTANCE FILTER: only show anchors within 5km of selected location ──
+  return filterAnchorsByDistance(merged, loc, 5).slice(0,7);
 }
 
 // ══════════════════════════════════════════════════════════
