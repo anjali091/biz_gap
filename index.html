@@ -2147,8 +2147,31 @@ function renderQuiz(cat, sub){
 
 function selQuiz(field,val,el){
   S[field]=val;
+  // Also capture the human-readable label for investment so we can parse exact rupee amounts
+  if(field==='investment') S.investmentLabel = el.textContent.trim();
   el.closest('.qopts').querySelectorAll('.qopt').forEach(b=>b.classList.remove('sel'));
   el.classList.add('sel');
+}
+
+// Parse a rupee label like "rupees15-40 Lakhs" or "rupees50 Lakhs-2 Cr" into {minRs, maxRs}
+function parseInvestmentLabel(label) {
+  if(!label) return null;
+  function toRs(num, unit) {
+    var n = parseFloat(num);
+    if(isNaN(n)) return null;
+    var u = (unit||'').toLowerCase();
+    if(u.indexOf('cr')>=0) return Math.round(n * 10000000);
+    if(u.indexOf('l')>=0) return Math.round(n * 100000);
+    if(u.indexOf('k')>=0) return Math.round(n * 1000);
+    return Math.round(n);
+  }
+  var m = label.match(/[\u20B9\$]?\s*([\d.]+)\s*(Cr|Lakh|L|K)?[^0-9]+([\d.]+)?\s*(Cr|Lakh|L|K|\+)?/i);
+  if(!m) return null;
+  var minRs = toRs(m[1], m[2]||m[4]);
+  var maxRaw = m[3] ? toRs(m[3], m[4]) : null;
+  var maxRs = maxRaw || minRs * 2;
+  if(!minRs) return null;
+  return { minRs: minRs, maxRs: maxRs };
 }
 
 const INVEST_OPTS={
@@ -18800,13 +18823,40 @@ async function buildResultsWithAI() {
   let aiData = null;
   if(ANTHROPIC_API_KEY !== 'YOUR_KEY_HERE') {
     const invLevel=S.investment||'growth';
+    // Fallback tier table (used only when label cannot be parsed or is absent)
     const costRanges={
-      starter:{rent:[8000,20000],equip:[30000,150000],staff:[20000,60000],wc:[30000,80000],total:[100000,350000]},
-      growth:{rent:[20000,50000],equip:[100000,400000],staff:[50000,150000],wc:[60000,150000],total:[350000,900000]},
-      expansion:{rent:[50000,150000],equip:[400000,1500000],staff:[150000,500000],wc:[150000,500000],total:[900000,3000000]},
-      enterprise:{rent:[150000,500000],equip:[1500000,10000000],staff:[500000,2000000],wc:[500000,2000000],total:[3000000,20000000]}
+      micro:    {rent:[3000,10000],    equip:[10000,50000],    staff:[8000,25000],    wc:[10000,30000],    total:[30000,100000]},
+      starter:  {rent:[8000,20000],    equip:[30000,150000],   staff:[20000,60000],   wc:[30000,80000],    total:[100000,350000]},
+      bootstrap:{rent:[8000,25000],    equip:[40000,180000],   staff:[25000,70000],   wc:[35000,100000],   total:[120000,400000]},
+      growth:   {rent:[20000,50000],   equip:[100000,400000],  staff:[50000,150000],  wc:[60000,150000],   total:[350000,900000]},
+      expansion:{rent:[50000,150000],  equip:[400000,1500000], staff:[150000,500000], wc:[150000,500000],  total:[900000,3000000]},
+      enterprise:{rent:[150000,500000],equip:[1500000,10000000],staff:[500000,2000000],wc:[500000,2000000],total:[3000000,20000000]},
+      funded:   {rent:[200000,800000], equip:[2000000,15000000],staff:[800000,3000000],wc:[800000,3000000],total:[5000000,30000000]},
+      solo:     {rent:[5000,15000],    equip:[20000,80000],    staff:[15000,40000],   wc:[15000,50000],    total:[60000,200000]}
     };
-    const cr=costRanges[invLevel]||costRanges.growth;
+    var baseCr = costRanges[invLevel]||costRanges.growth;
+    // ── Label-aware cost range builder ──
+    // Parse the exact rupee values from the label the user clicked (e.g. "₹15–40 Lakhs")
+    // so the displayed total ALWAYS matches what the user selected, regardless of tier key.
+    var _parsed = parseInvestmentLabel(S.investmentLabel||'');
+    var cr;
+    if(_parsed && _parsed.minRs && _parsed.maxRs) {
+      var _totalMin = _parsed.minRs;
+      var _totalMax = _parsed.maxRs;
+      var baseTotal = (baseCr.total[0]+baseCr.total[1])/2 || 1;
+      var scMin = _totalMin / baseTotal;
+      var scMax = _totalMax / baseTotal;
+      var rnd = function(v){ return Math.max(1000, Math.round(v/1000)*1000); };
+      cr = {
+        rent:  [rnd(baseCr.rent[0]*scMin),  rnd(baseCr.rent[1]*scMax)],
+        equip: [rnd(baseCr.equip[0]*scMin), rnd(baseCr.equip[1]*scMax)],
+        staff: [rnd(baseCr.staff[0]*scMin), rnd(baseCr.staff[1]*scMax)],
+        wc:    [rnd(baseCr.wc[0]*scMin),    rnd(baseCr.wc[1]*scMax)],
+        total: [_totalMin, _totalMax]
+      };
+    } else {
+      cr = baseCr;
+    }
     const spaceType = S.cat==='food'?'food':S.cat==='healthcare'?'clinic':S.cat==='beauty'?'studio':S.cat==='education'?'office':'shop';
     // Pull CSV dataset context for this location+sector to inject into AI prompt
     const _csvLoc=CSV_DATA[loc]||CSV_DATA[loc.replace(' Area','')]||null;
@@ -18854,6 +18904,12 @@ VERIFIED HYPERLOCAL DATA (from Excel dataset — all anchors confirmed within 5k
 ${_foodOpp?`- Core Opportunity Insight: ${_foodOpp}`:''}
 ${_foodRisk?`- Risk Level: ${_foodRisk}`:''}
 
+COST CONSTRAINTS (user's chosen investment level: "${invLevel}") — ALL costs MUST stay within these ranges:
+- Monthly Rent: ₹${cr.rent[0].toLocaleString('en-IN')} – ₹${cr.rent[1].toLocaleString('en-IN')}
+- Equipment & Fixtures: ₹${cr.equip[0].toLocaleString('en-IN')} – ₹${cr.equip[1].toLocaleString('en-IN')}
+- Staff (monthly): ₹${cr.staff[0].toLocaleString('en-IN')} – ₹${cr.staff[1].toLocaleString('en-IN')}
+- Working Capital: ₹${cr.wc[0].toLocaleString('en-IN')} – ₹${cr.wc[1].toLocaleString('en-IN')}
+- Total Required: ₹${cr.total[0].toLocaleString('en-IN')} – ₹${cr.total[1].toLocaleString('en-IN')}
 CRITICAL RULES:
 1. Use the Nearby Demand Anchors above to write location-specific opportunity descriptions
 2. "competitors" must be REALISTIC ${cat} businesses near ${loc} — NOT food/restaurant names unless sector is Food & Bev
@@ -18861,6 +18917,7 @@ CRITICAL RULES:
 4. "checklist" tasks must be the ACTUAL licences and steps required for a ${cat} business
 5. "rentalSpaces" type must match the sector: ${spaceType}
 6. ALL data must be sector-appropriate. A clinic does not compete with restaurants.
+7. "startupCost" values MUST be within the COST CONSTRAINTS above — do not invent higher or lower numbers.
 
 Return this exact JSON structure with all fields filled correctly for ${cat} in ${loc}:
 {
@@ -18925,6 +18982,24 @@ Return this exact JSON structure with all fields filled correctly for ${cat} in 
   "anchorPoints": ${JSON.stringify(_csvAnchors?_csvAnchors.split(', ').slice(0,5):["Key landmark in "+loc,"Secondary demand node","Supporting footfall anchor"])}
 }`;
     aiData = await callClaude('You are BizGap, a hyperlocal business intelligence AI for Bhubaneswar, Odisha. You MUST return sector-appropriate data. NEVER show food competitors for a healthcare query, NEVER show restaurant suppliers for a salon query. Always respond with valid JSON only, no markdown fences.', userPrompt);
+    // ── GUARDRAIL: Clamp startupCost to user-selected investment band ──
+    if(aiData && aiData.startupCost) {
+      const sc = aiData.startupCost;
+      const clamp=(v,mn,mx)=>Math.min(Math.max(v,mn),mx);
+      sc.rent.min       = clamp(sc.rent.min,        cr.rent[0],  cr.rent[1]);
+      sc.rent.max       = clamp(sc.rent.max,         sc.rent.min, cr.rent[1]);
+      sc.equipment.min  = clamp(sc.equipment.min,    cr.equip[0], cr.equip[1]);
+      sc.equipment.max  = clamp(sc.equipment.max,    sc.equipment.min, cr.equip[1]);
+      sc.staffMonthly.min= clamp(sc.staffMonthly.min,cr.staff[0], cr.staff[1]);
+      sc.staffMonthly.max= clamp(sc.staffMonthly.max,sc.staffMonthly.min, cr.staff[1]);
+      sc.workingCapital.min= clamp(sc.workingCapital.min,cr.wc[0],cr.wc[1]);
+      sc.workingCapital.max= clamp(sc.workingCapital.max,sc.workingCapital.min,cr.wc[1]);
+      // Recompute total from components to ensure consistency
+      sc.total.min = sc.equipment.min + sc.workingCapital.min + (sc.rent.min*3) + (sc.staffMonthly.min*2);
+      sc.total.max = sc.equipment.max + sc.workingCapital.max + (sc.rent.max*3) + (sc.staffMonthly.max*2);
+      sc.total.min = clamp(sc.total.min, cr.total[0], cr.total[1]);
+      sc.total.max = clamp(sc.total.max, sc.total.min, cr.total[1]);
+    }
   }
   
   const d = aiData || getDemoData();
